@@ -139,7 +139,7 @@ export default function Home() {
                     Join thousands of users who have transformed their task management. 
                     Start organizing your life today It&apos;s completely free!
 
-                    echo "// Test change" 
+                 
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                     <Link
