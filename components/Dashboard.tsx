@@ -251,10 +251,11 @@ export default function Dashboard() {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">
+                    <label htmlFor="priority-select" className="block text-sm font-medium text-gray-700">
                       Priority
                     </label>
                     <select
+                      id="priority-select"
                       value={newTask.priority}
                       onChange={(e) => setNewTask({...newTask, priority: e.target.value as "LOW" | "MEDIUM" | "HIGH"})}
                       className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 px-3 py-2 border"
@@ -335,6 +336,7 @@ export default function Dashboard() {
                           checked={task.completed}
                           onChange={() => toggleTask(task.id, task.completed)}
                           className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                          title={`Mark task "${task.title}" as ${task.completed ? "incomplete" : "completed"}`}
                         />
                         <div className="flex-1">
                           <h4 className={`text-sm font-medium ${

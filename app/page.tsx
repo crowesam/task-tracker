@@ -83,7 +83,7 @@ export default function Home() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                   </svg>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">Create & Organize</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-3">Create & Organize!</h3>
                 <p className="text-gray-600 leading-relaxed">
                   Easily create tasks with priorities, due dates, and detailed descriptions. 
                   Keep everything organized in your personal workspace.
@@ -138,6 +138,8 @@ export default function Home() {
                   <p className="text-xl text-blue-100 mb-8 leading-relaxed">
                     Join thousands of users who have transformed their task management. 
                     Start organizing your life today It&apos;s completely free!
+
+                    echo "// Test change" 
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                     <Link
@@ -172,6 +174,6 @@ export default function Home() {
 
       </div>
     </div>
-    </>git
+    </>
   )
 }
