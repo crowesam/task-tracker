@@ -11,7 +11,7 @@ export default function Home() {
           <nav className="flex justify-between items-center">
             <div className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">📋</span>
+                <span className="text-white font-bold text-lg">public/samc.png</span>
               </div>
               <h1 className="text-2xl font-bold text-gray-900">TaskTracker</h1>
             </div>
@@ -137,7 +137,7 @@ export default function Home() {
                   </h2>
                   <p className="text-xl text-blue-100 mb-8 leading-relaxed">
                     Join thousands of users who have transformed their task management. 
-                    Start organizing your life today – it&apos;s completely free!
+                    Start organizing your life today It&apos;s completely free!
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                     <Link
@@ -172,6 +172,6 @@ export default function Home() {
 
       </div>
     </div>
-    </>
+    </>git
   )
 }

@@ -256,7 +256,7 @@ export default function Dashboard() {
                     </label>
                     <select
                       value={newTask.priority}
-                      onChange={(e) => setNewTask({...newTask, priority: e.target.value as any})}
+                      onChange={(e) => setNewTask({...newTask, priority: e.target.value as "LOW" | "MEDIUM" | "HIGH"})}
                       className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 px-3 py-2 border"
                     >
                       <option value="LOW">Low Priority</option>
@@ -301,7 +301,7 @@ export default function Dashboard() {
                 ].map((tab) => (
                   <button
                     key={tab.key}
-                    onClick={() => setFilter(tab.key as any)}
+                    onClick={() => setFilter(tab.key as "all" | "completed" | "pending")}
                     className={`${
                       filter === tab.key
                         ? "border-blue-500 text-blue-600"
