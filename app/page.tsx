@@ -137,7 +137,7 @@ export default function Home() {
                   </h2>
                   <p className="text-xl text-blue-100 mb-8 leading-relaxed">
                     Join thousands of users who have transformed their task management. 
-                    Start organizing your life today It&apos;s completely free!
+                    Start organizing your life today for free!
 
                  
                   </p>
