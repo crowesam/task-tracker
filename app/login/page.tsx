@@ -3,12 +3,14 @@ import { useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import ForgotPasswordForm from "@/components/ForgotPasswordForm"
 
 export default function Login() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+  const [showForgotPassword, setShowForgotPassword] = useState(false)
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -28,6 +30,15 @@ export default function Login() {
       setError("Invalid email or password")
     }
     setLoading(false)
+  }
+
+  // If showing forgot password form, render that instead
+  if (showForgotPassword) {
+    return (
+      <ForgotPasswordForm 
+        onBack={() => setShowForgotPassword(false)} 
+      />
+    )
   }
 
   return (
@@ -75,6 +86,19 @@ export default function Login() {
               className="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               placeholder="Password"
             />
+          </div>
+
+          {/* ADD FORGOT PASSWORD LINK HERE */}
+          <div className="flex items-center justify-between">
+            <div className="text-sm">
+              <button
+                type="button"
+                onClick={() => setShowForgotPassword(true)}
+                className="text-indigo-600 hover:text-indigo-500 font-medium"
+              >
+                Forgot your password?
+              </button>
+            </div>
           </div>
 
           <div>
