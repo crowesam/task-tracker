@@ -12,7 +12,9 @@ export default function Home() {
           <nav className="flex justify-between items-center">
             <div className="flex items-center space-x-2">
                <span>
-                 <Image src="/samc.png" alt="TaskTracker logo" width={75} height={75} />
+                 <Image src="/samc.png" alt="TaskTracker logo" width={175} height={175} />
+                <p>Sam Crowe did it!
+                   </p>
                </span>
                 
             </div>
