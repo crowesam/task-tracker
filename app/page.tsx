@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 
 export default function Home() {
   return (
@@ -10,11 +11,12 @@ export default function Home() {
         <div className="pt-6 pb-8">
           <nav className="flex justify-between items-center">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">public/samc.png</span>
-              </div>
-              <h1 className="text-2xl font-bold text-gray-900">TaskTracker</h1>
+               <span>
+                 <Image src="/samc.png" alt="TaskTracker logo" width={32} height={32} />
+               </span>
+               <span> <img src="public/samc.png"/></span>
             </div>
+            <h1 className="text-2xl font-bold text-gray-900">TaskTracker</h1>
             <div className="flex items-center space-x-4">
               <Link 
                 href="/login" 
