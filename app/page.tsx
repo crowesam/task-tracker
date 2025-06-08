@@ -21,7 +21,7 @@ export default function Home() {
             <h1 className="text-2xl font-bold text-gray-900">TaskTracker</h1>
             <div className="flex items-center space-x-4">
               <Link 
-                href="/login" 
+                href="/sign-in" 
                 className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
               >
                 Sign In
@@ -60,7 +60,7 @@ export default function Home() {
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
               </Link>
               <Link
-                href="/login"
+                href="/sign-in"
                 // className="border-2 border-gray-200 text-gray-700 px-8 py-4 rounded-xl hover:border-blue-300 hover:text-blue-600 font-semibold text-lg transition-all duration-200 bg-white/50 backdrop-blur-sm"
                   className="border-2 border text-gray-700 px-8 py-4 rounded-xl hover:border-blue-300hover:text-blue-600 font-semibold text-lg transition-all duration-200 bg-white/50 backdrop-blur-sm"
                > Sign In
@@ -153,7 +153,7 @@ export default function Home() {
                       Get Started for Free
                     </Link>
                     <Link
-                      href="/login"
+                      href="/sign-in"
                       className="border-2 border-white/30 text-white px-8 py-4 rounded-xl hover:border-white hover:bg-white/10 font-semibold text-lg transition-all duration-200"
                     >
                       Sign In

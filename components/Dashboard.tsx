@@ -1,5 +1,5 @@
 "use client"
-import { useSession, signOut } from "next-auth/react"
+import { useUser, useStackApp } from "@stackframe/stack"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 
@@ -14,7 +14,8 @@ interface Task {
 }
 
 export default function Dashboard() {
-  const { data: session, status } = useSession()
+  const user = useUser()  // This is correct!
+  const app = useStackApp() // Add this for signOut functionality
   const router = useRouter()
   const [tasks, setTasks] = useState<Task[]>([])
   const [newTask, setNewTask] = useState({ 
@@ -25,11 +26,11 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(false)
   const [filter, setFilter] = useState<"all" | "completed" | "pending">("all")
 
-  // Redirect if not authenticated
   useEffect(() => {
-    if (status === "loading") return
-    if (!session) router.push("/login")
-  }, [session, status, router])
+  if (user === null) {  // null means not authenticated
+    router.push("/sign-in")  
+  }
+}, [user, router])
 
   // Fetch tasks on mount
   useEffect(() => {
@@ -38,20 +39,24 @@ export default function Dashboard() {
     }
   }, [session])
 
-  // Show loading while checking session
-  if (status === "loading") {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
-      </div>
-    )
-  }
+ // Replace status === "loading" with user === undefined:
+if (user === undefined) {  // undefined means still loading
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-lg">Loading...</div>
+    </div>
+  )
+}
 
   // Don't render if no session
-  if (!session) {
-    return null
-  }
+ // Replace !session with !user:
+if (!user) {
+  return null
+} 
 
+// const app = async () => {
+//   await app.signOut()
+// }
   const fetchTasks = async () => {
     try {
       const response = await fetch("/api/tasks")
@@ -141,16 +146,16 @@ export default function Dashboard() {
               <h1 className="text-2xl font-bold text-gray-900">Task Tracker</h1>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-gray-700">
-                Welcome, {session.user?.name || session.user?.email}
-              </span>
-              <button
-                onClick={() => signOut({ callbackUrl: "/login" })}
-                className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
-              >
-                Sign Out
-              </button>
-            </div>
+    <span className="text-gray-700">
+      Welcome, {user?.displayName || user?.primaryEmail}
+    </span>
+    <button
+      onClick={() => app.signOut()}
+      className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
+    >
+      Sign Out
+    </button>
+  </div>
           </div>
         </div>
       </nav>

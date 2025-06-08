@@ -26,7 +26,7 @@ export default function Register() {
       })
 
       if (response.ok) {
-        router.push("/login?message=Registration successful")
+        router.push("/sign-in?message=Registration successful")
       } else {
         const data = await response.json()
         setError(data.error || "Something went wrong")
@@ -111,7 +111,7 @@ export default function Register() {
           </div>
           
           <div className="text-center">
-            <Link href="/login" className="text-indigo-600 hover:text-indigo-500">
+            <Link href="/sign-in" className="text-indigo-600 hover:text-indigo-500">
               Already have an account? Sign in
             </Link>
           </div>
