@@ -1,40 +1,50 @@
-import { NextRequest, NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
+// app/api/tasks/reorder/route.ts
+import { NextResponse } from "next/server"
+import { stackServerApp } from "@/stack"  // Stack Auth instead of NextAuth
 import { prisma } from "@/lib/prisma"
 
-export async function PATCH(request: NextRequest) {
-  const session = await getServerSession(authOptions)
-  if (!session?.user?.email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
-
+export async function POST(request: Request) {
   try {
-    const { taskOrders } = await request.json() // Array of {id, order}
-
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email }
-    })
-
+    // Get authenticated user with Stack Auth
+    const user = await stackServerApp.getUser()
+    
     if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 })
-    }
-
-    // Update all task orders in a transaction
-    await prisma.$transaction(
-      taskOrders.map((task: { id: string; order: number }) =>
-        prisma.task.update({
-          where: { 
-            id: task.id,
-            userId: user.id // Ensure user owns the task
-          },
-          data: { order: task.order }
-        })
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
       )
-    )
-
-    return NextResponse.json({ message: "Tasks reordered successfully" })
+    }
+    
+    const { taskId, newOrder } = await request.json()
+    
+    // Verify the task belongs to the user before reordering
+    const task = await prisma.task.findFirst({
+      where: {
+        id: taskId,
+        userId: user.id
+      }
+    })
+    
+    if (!task) {
+      return NextResponse.json(
+        { error: "Task not found or unauthorized" },
+        { status: 404 }
+      )
+    }
+    
+    // Update the task order
+    const updatedTask = await prisma.task.update({
+      where: { id: taskId },
+      data: { order: newOrder }
+    })
+    
+    return NextResponse.json(updatedTask)
+    
   } catch (error) {
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    console.error("Error reordering task:", error)
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    )
   }
 }
