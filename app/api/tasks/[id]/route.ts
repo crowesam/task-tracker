@@ -1,54 +1,40 @@
-import { NextRequest, NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
+// app/api/tasks/[id]/route.ts
+import { NextResponse } from "next/server"
+import { stackServerApp } from "@/stack"  // Import your Stack server app
+import { prisma } from "@/lib/prisma"    // Assuming you have a prisma instance
 
-export async function PATCH(
-  request: NextRequest,
-  context: { params: Promise<{ id: string }> }
+// GET a specific task
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions)
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
-
-    const { id } = await context.params  // Await the params here
+    const user = await stackServerApp.getUser()
     
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email }
-    })
-
     if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 })
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      )
     }
-
-    const { completed, title, description, priority } = await request.json()
-
-    const task = await prisma.task.updateMany({
+    
+    const task = await prisma.task.findFirst({
       where: {
-        id: id,  // Use the awaited id
-        userId: user.id
-      },
-      data: {
-        ...(completed !== undefined && { completed }),
-        ...(title && { title }),
-        ...(description !== undefined && { description }),
-        ...(priority && { priority })
+        id: params.id,
+        userId: user.id  // Make sure the task belongs to the user
       }
     })
-
-    if (task.count === 0) {
-      return NextResponse.json({ error: "Task not found" }, { status: 404 })
+    
+    if (!task) {
+      return NextResponse.json(
+        { error: "Task not found" },
+        { status: 404 }
+      )
     }
-
-    const updatedTask = await prisma.task.findUnique({
-      where: { id: id }  // Use the awaited id
-    })
-
-    return NextResponse.json(updatedTask)
+    
+    return NextResponse.json(task)
+    
   } catch (error) {
-    console.error("Error updating task:", error)
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -56,40 +42,86 @@ export async function PATCH(
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  context: { params: Promise<{ id: string }> }
+// UPDATE a task
+export async function PUT(
+  request: Request,
+  { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions)
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
-
-    const { id } = await context.params  // Await the params here
-
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email }
-    })
-
+    const user = await stackServerApp.getUser()
+    
     if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 })
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      )
     }
-
-    const deletedTask = await prisma.task.deleteMany({
+    
+    const data = await request.json()
+    
+    const task = await prisma.task.updateMany({
       where: {
-        id: id,  // Use the awaited id
-        userId: user.id
+        id: params.id,
+        userId: user.id  // Ensure user owns the task
+      },
+      data: {
+        title: data.title,
+        description: data.description,
+        completed: data.completed,
+        priority: data.priority,
+        updatedAt: new Date()
       }
     })
-
-    if (deletedTask.count === 0) {
-      return NextResponse.json({ error: "Task not found" }, { status: 404 })
+    
+    if (task.count === 0) {
+      return NextResponse.json(
+        { error: "Task not found or unauthorized" },
+        { status: 404 }
+      )
     }
-
-    return NextResponse.json({ message: "Task deleted successfully" })
+    
+    return NextResponse.json({ success: true })
+    
   } catch (error) {
-    console.error("Error deleting task:", error)
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    )
+  }
+}
+
+// DELETE a task
+export async function DELETE(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const user = await stackServerApp.getUser()
+    
+    if (!user) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      )
+    }
+    
+    const deleted = await prisma.task.deleteMany({
+      where: {
+        id: params.id,
+        userId: user.id  // Ensure user owns the task
+      }
+    })
+    
+    if (deleted.count === 0) {
+      return NextResponse.json(
+        { error: "Task not found or unauthorized" },
+        { status: 404 }
+      )
+    }
+    
+    return NextResponse.json({ success: true })
+    
+  } catch (error) {
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
