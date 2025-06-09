@@ -27,7 +27,7 @@ export default function Home() {
                 Sign In
               </Link>
               <Link 
-                href="/register" 
+                href="/sign-up" 
                 className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 font-medium transition-all duration-200 shadow-sm hover:shadow-md"
               >
                 Get Started
@@ -147,7 +147,7 @@ export default function Home() {
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                     <Link
-                      href="/register"
+                      href="/sign-up"
                       className="bg-white text-blue-600 px-8 py-4 rounded-xl hover:bg-gray-50 font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-1"
                     >
                       Get Started for Free
