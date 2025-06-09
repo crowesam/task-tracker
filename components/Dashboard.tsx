@@ -14,8 +14,8 @@ interface Task {
 }
 
 export default function Dashboard() {
-  const user = useUser()  // This is correct!
-  const app = useStackApp() // Add this for signOut functionality
+  const user = useUser()
+  const app = useStackApp()
   const router = useRouter()
   const [tasks, setTasks] = useState<Task[]>([])
   const [newTask, setNewTask] = useState({ 
@@ -26,37 +26,34 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(false)
   const [filter, setFilter] = useState<"all" | "completed" | "pending">("all")
 
+  // Redirect if not authenticated
   useEffect(() => {
-  if (user === null) {  // null means not authenticated
-    router.push("/sign-in")  
-  }
-}, [user, router])
+    if (user === null) {
+      router.push("/sign-in")  
+    }
+  }, [user, router])
 
-  // Fetch tasks on mount
+  // Fetch tasks when user is available
   useEffect(() => {
-    if (session) {
+    if (user) {  // ✅ Fixed: use 'user' instead of 'session'
       fetchTasks()
     }
-  }, [session])
+  }, [user])  // ✅ Fixed: depend on 'user' instead of 'session'
 
- // Replace status === "loading" with user === undefined:
-if (user === undefined) {  // undefined means still loading
-  return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="text-lg">Loading...</div>
-    </div>
-  )
-}
+  // Show loading state
+  if (user === undefined) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-lg">Loading...</div>
+      </div>
+    )
+  }
 
-  // Don't render if no session
- // Replace !session with !user:
-if (!user) {
-  return null
-} 
+  // Don't render if no user
+  if (!user) {
+    return null
+  } 
 
-// const app = async () => {
-//   await app.signOut()
-// }
   const fetchTasks = async () => {
     try {
       const response = await fetch("/api/tasks")
@@ -146,16 +143,22 @@ if (!user) {
               <h1 className="text-2xl font-bold text-gray-900">Task Tracker</h1>
             </div>
             <div className="flex items-center space-x-4">
-    <span className="text-gray-700">
-      Welcome, {user?.displayName || user?.primaryEmail}
-    </span>
-    <button
-      onClick={() => app.signOut()}
-      className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
-    >
-      Sign Out
-    </button>
-  </div>
+              <span className="text-gray-700">
+                Welcome, {user?.displayName || user?.primaryEmail}
+              </span>
+        <button
+          onClick={async () => {
+              try {
+                await user.signOut()
+              } catch (error) {
+                console.error('Sign out failed:', error)
+        }
+          }}
+  className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
+>
+  Sign Out
+</button>
+            </div>
           </div>
         </div>
       </nav>
