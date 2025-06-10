@@ -1,5 +1,5 @@
 "use client"
-import { useUser, useStackApp } from "@stackframe/stack"
+import { useUser } from "@stackframe/stack"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 
@@ -15,7 +15,6 @@ interface Task {
 
 export default function Dashboard() {
   const user = useUser()
-  const app = useStackApp()
   const router = useRouter()
   const [tasks, setTasks] = useState<Task[]>([])
   const [newTask, setNewTask] = useState({ 
