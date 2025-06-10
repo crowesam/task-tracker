@@ -53,7 +53,7 @@ export default function Home() {
             {/* CTA Buttons */}
             <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link
-                href="/register"
+                href="/dashboard"
                 className="group relative bg-blue-600 text-white px-8 py-4 rounded-xl hover:bg-blue-700 font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-1"
               >
                 <span className="relative z-10">Start Tracking Tasks</span>
