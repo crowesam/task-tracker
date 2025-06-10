@@ -1,12 +1,12 @@
 // app/api/tasks/[id]/route.ts
 import { NextResponse } from "next/server"
-import { stackServerApp } from "@/stack"  // Import your Stack server app
-import { prisma } from "@/lib/prisma"    // Assuming you have a prisma instance
+import { stackServerApp } from "@/stack"
+import { prisma } from "@/lib/prisma"
 
 // GET a specific task
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }  // ← Note: Promise wrapper for Next.js 15
 ) {
   try {
     const user = await stackServerApp.getUser()
@@ -18,10 +18,12 @@ export async function GET(
       )
     }
     
+    const { id } = await params  // ← Await the params
+    
     const task = await prisma.task.findFirst({
       where: {
-        id: params.id,
-        userId: user.id  // Make sure the task belongs to the user
+        id: id,
+        userId: user.id
       }
     })
     
@@ -45,7 +47,7 @@ export async function GET(
 // UPDATE a task
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }  // ← Promise wrapper
 ) {
   try {
     const user = await stackServerApp.getUser()
@@ -57,12 +59,13 @@ export async function PUT(
       )
     }
     
+    const { id } = await params  // ← Await the params
     const data = await request.json()
     
     const task = await prisma.task.updateMany({
       where: {
-        id: params.id,
-        userId: user.id  // Ensure user owns the task
+        id: id,
+        userId: user.id
       },
       data: {
         title: data.title,
@@ -93,7 +96,7 @@ export async function PUT(
 // DELETE a task
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }  // ← Promise wrapper
 ) {
   try {
     const user = await stackServerApp.getUser()
@@ -105,10 +108,12 @@ export async function DELETE(
       )
     }
     
+    const { id } = await params  // ← Await the params
+    
     const deleted = await prisma.task.deleteMany({
       where: {
-        id: params.id,
-        userId: user.id  // Ensure user owns the task
+        id: id,
+        userId: user.id
       }
     })
     
