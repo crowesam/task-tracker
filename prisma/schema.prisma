@@ -36,6 +36,7 @@ model Task {
   description String?
   completed   Boolean   @default(false)
   priority    Priority  @default(MEDIUM)
+  category    String    @default("General") 
   dueDate     DateTime?
   order       Int       @default(0)
   createdAt   DateTime  @default(now())

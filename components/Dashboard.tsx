@@ -9,6 +9,7 @@ interface Task {
   description: string
   completed: boolean
   priority: "LOW" | "MEDIUM" | "HIGH"
+  category: string  // Added this field
   createdAt: string
   updatedAt: string
 }
@@ -20,7 +21,8 @@ export default function Dashboard() {
   const [newTask, setNewTask] = useState({ 
     title: "", 
     description: "", 
-    priority: "MEDIUM" as "LOW" | "MEDIUM" | "HIGH"
+    priority: "MEDIUM" as "LOW" | "MEDIUM" | "HIGH",
+    category: "General"  // ✅ ADDED: Required category field with default value
   })
   const [loading, setLoading] = useState(false)
   const [filter, setFilter] = useState<"all" | "completed" | "pending">("all")
@@ -34,10 +36,10 @@ export default function Dashboard() {
 
   // Fetch tasks when user is available
   useEffect(() => {
-    if (user) {  // ✅ Fixed: use 'user' instead of 'session'
+    if (user) {
       fetchTasks()
     }
-  }, [user])  // ✅ Fixed: depend on 'user' instead of 'session'
+  }, [user])
 
   // Show loading state
   if (user === undefined) {
@@ -59,6 +61,8 @@ export default function Dashboard() {
       if (response.ok) {
         const data = await response.json()
         setTasks(data)
+      } else {
+        console.error("Failed to fetch tasks:", response.status, response.statusText)
       }
     } catch (error) {
       console.error("Error fetching tasks:", error)
@@ -79,11 +83,18 @@ export default function Dashboard() {
       })
 
       if (response.ok) {
-        setNewTask({ title: "", description: "", priority: "MEDIUM" })
+        // ✅ FIXED: Reset form including category
+        setNewTask({ title: "", description: "", priority: "MEDIUM", category: "General" })
         await fetchTasks()
+      } else {
+        // ✅ ADDED: Better error handling
+        const errorData = await response.json()
+        console.error("Failed to create task:", errorData)
+        alert(`Failed to create task: ${errorData.error || 'Unknown error'}`)
       }
     } catch (error) {
       console.error("Error creating task:", error)
+      alert("Error creating task. Please try again.")
     }
     setLoading(false)
   }
@@ -91,13 +102,15 @@ export default function Dashboard() {
   const toggleTask = async (taskId: string, completed: boolean) => {
     try {
       const response = await fetch(`/api/tasks/${taskId}`, {
-        method: "PATCH",
+        method: "PUT",  // ✅ FIXED: Changed from PATCH to PUT to match API
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ completed: !completed })
       })
 
       if (response.ok) {
         await fetchTasks()
+      } else {
+        console.error("Failed to update task:", response.status, response.statusText)
       }
     } catch (error) {
       console.error("Error updating task:", error)
@@ -114,6 +127,8 @@ export default function Dashboard() {
 
       if (response.ok) {
         await fetchTasks()
+      } else {
+        console.error("Failed to delete task:", response.status, response.statusText)
       }
     } catch (error) {
       console.error("Error deleting task:", error)
@@ -145,18 +160,18 @@ export default function Dashboard() {
               <span className="text-gray-700">
                 Welcome, {user?.displayName || user?.primaryEmail}
               </span>
-        <button
-          onClick={async () => {
-              try {
-                await user.signOut()
-              } catch (error) {
-                console.error('Sign out failed:', error)
-        }
-          }}
-  className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
->
-  Sign Out
-</button>
+              <button
+                onClick={async () => {
+                  try {
+                    await user.signOut()
+                  } catch (error) {
+                    console.error('Sign out failed:', error)
+                  }
+                }}
+                className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
+              >
+                Sign Out
+              </button>
             </div>
           </div>
         </div>
@@ -242,7 +257,7 @@ export default function Dashboard() {
               </h3>
               
               <form onSubmit={createTask} className="space-y-4">
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                   <div>
                     <label className="block text-sm font-medium text-gray-700">
                       Title *
@@ -272,6 +287,22 @@ export default function Dashboard() {
                       <option value="HIGH">High Priority</option>
                     </select>
                   </div>
+
+                  {/* ✅ ADDED: Category field */}
+                  <div>
+                    <label htmlFor="category-select" className="block text-sm font-medium text-gray-700">
+                      Category *
+                    </label>
+                    <input
+                      type="text"
+                      id="category-input"
+                      required
+                      value={newTask.category}
+                      onChange={(e) => setNewTask({...newTask, category: e.target.value})}
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 px-3 py-2 border"
+                      placeholder="e.g., Work, Personal, Shopping"
+                    />
+                  </div>
                 </div>
                 
                 <div>
@@ -289,7 +320,7 @@ export default function Dashboard() {
                 
                 <button
                   type="submit"
-                  disabled={loading || !newTask.title.trim()}
+                  disabled={loading || !newTask.title.trim() || !newTask.category.trim()}
                   className="w-full sm:w-auto bg-blue-600 text-white py-2 px-6 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {loading ? "Creating..." : "Create Task"}
@@ -360,9 +391,16 @@ export default function Dashboard() {
                               {task.description}
                             </p>
                           )}
-                          <p className="text-xs text-gray-400 mt-1">
-                            Created {new Date(task.createdAt).toLocaleDateString()}
-                          </p>
+                          <div className="flex items-center space-x-2 mt-1">
+                            <p className="text-xs text-gray-400">
+                              Created {new Date(task.createdAt).toLocaleDateString()}
+                            </p>
+                            {/* ✅ ADDED: Display category */}
+                            <span className="text-xs text-gray-400">•</span>
+                            <span className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                              {task.category}
+                            </span>
+                          </div>
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">
