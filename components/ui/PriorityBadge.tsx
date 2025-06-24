@@ -1,6 +1,6 @@
 // components/ui/PriorityBadge.tsx
 import React from "react";
-import { Priority } from '../../types/task'
+type Priority = 'HIGH' | 'MEDIUM' | 'LOW';
 
 interface PriorityBadgeProps {
   priority: Priority;
