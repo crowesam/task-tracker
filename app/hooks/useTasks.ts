@@ -1,7 +1,7 @@
 // hooks/useTasks.ts
 import { useState, useEffect } from 'react';
 // Make sure the following file exists and exports the required types:
-import { Task, Priority, FilterState, CreateTaskData, UpdateTaskData } from '../types/task';
+import { Task, FilterState, CreateTaskData, UpdateTaskData } from '../types/task';
 
 export const useTasks = (initialFilters?: FilterState) => {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -115,7 +115,7 @@ export const useTasks = (initialFilters?: FilterState) => {
 
   useEffect(() => {
     fetchTasks(initialFilters);
-  }, []);
+  }, [initialFilters]); // Add initialFilters to the dependency array]);
 
   return {
     tasks,
