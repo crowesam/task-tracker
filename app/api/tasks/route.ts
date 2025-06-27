@@ -56,13 +56,32 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    // Find the database user (same logic as POST)
+    let dbUser = await prisma.user.findUnique({
+      where: { id: user.id }
+    });
+
+    if (!dbUser) {
+      // If no user found by Stack Auth ID, try by email
+      dbUser = await prisma.user.findUnique({
+        where: { email: user.primaryEmail || '' }
+      });
+    }
+
+    if (!dbUser) {
+      return NextResponse.json(
+        { error: "User not found" },
+        { status: 404 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const priority = searchParams.get('priority');
     const category = searchParams.get('category');
     const completed = searchParams.get('completed');
 
-    // Build Prisma where clause
-    const where: import("@prisma/client").Prisma.TaskWhereInput = { userId: user.id };
+    // Build Prisma where clause - USE dbUser.id instead of user.id
+    const where: import("@prisma/client").Prisma.TaskWhereInput = { userId: dbUser.id };
     
     if (priority && priority !== 'all') {
       // Convert lowercase to uppercase for your enum
@@ -97,7 +116,6 @@ export async function GET(request: NextRequest) {
     )
   }
 }
-
 // CREATE a new task
 export async function POST(request: NextRequest) {
   try {
