@@ -30,5 +30,11 @@ export default function DashboardPage() {
     }
   }
 
-  return <Dashboard user={user} onSignOut={handleSignOut} />
+  // Transform the user object to match our interface
+  const dashboardUser = user ? {
+    displayName: user.displayName,
+    primaryEmail: user.primaryEmail
+  } : null
+
+  return <Dashboard user={dashboardUser} onSignOut={handleSignOut} />
 }

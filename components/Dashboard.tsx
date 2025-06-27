@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 
 interface Task {
   id: string
@@ -17,15 +17,111 @@ interface AdvancedFilters {
   priority: string
   category: string
   sortBy: string
+  dueDate: string
 }
 
 interface DashboardProps {
   user: {
-    displayName?: string
-    primaryEmail?: string
+    displayName?: string | null
+    primaryEmail?: string | null
   } | null
   onSignOut: () => void
 }
+
+// Utility functions for due dates
+const getDueDateStatus = (dueDate: string | null, completed: boolean) => {
+  if (!dueDate || completed) return 'none';
+  
+  const now = new Date();
+  const due = new Date(dueDate);
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  
+  if (due < today) return 'overdue';
+  if (due >= today && due < tomorrow) return 'due-today';
+  if (due >= tomorrow && due < new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000)) return 'due-tomorrow';
+  if (due <= new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000)) return 'due-this-week';
+  return 'future';
+};
+
+const formatDueDate = (dueDate: string | null) => {
+  if (!dueDate) return null;
+  
+  const due = new Date(dueDate);
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  
+  if (due >= today && due < tomorrow) return 'Due Today';
+  if (due >= tomorrow && due < new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000)) return 'Due Tomorrow';
+  
+  const diffTime = due.getTime() - today.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  if (diffDays < 0) return `Overdue by ${Math.abs(diffDays)} day${Math.abs(diffDays) !== 1 ? 's' : ''}`;
+  if (diffDays <= 7) return `Due in ${diffDays} day${diffDays !== 1 ? 's' : ''}`;
+  
+  return due.toLocaleDateString();
+};
+
+// Notification manager
+const NotificationManager = {
+  requestPermission: async () => {
+    if ('Notification' in window) {
+      const permission = await Notification.requestPermission();
+      return permission === 'granted';
+    }
+    return false;
+  },
+
+  showNotification: (title: string, options?: NotificationOptions) => {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      return new Notification(title, {
+        icon: '/favicon.ico',
+        badge: '/favicon.ico',
+        ...options
+      });
+    }
+  },
+
+  checkOverdueTasks: (tasks: Task[]) => {
+    const overdueTasks = tasks.filter(task => 
+      !task.completed && 
+      task.dueDate && 
+      getDueDateStatus(task.dueDate, task.completed) === 'overdue'
+    );
+
+    if (overdueTasks.length > 0) {
+      NotificationManager.showNotification(
+        `You have ${overdueTasks.length} overdue task${overdueTasks.length !== 1 ? 's' : ''}`,
+        {
+          body: overdueTasks.slice(0, 3).map(t => `• ${t.title}`).join('\n'),
+          tag: 'overdue-tasks'
+        }
+      );
+    }
+  },
+
+  checkTodayTasks: (tasks: Task[]) => {
+    const todayTasks = tasks.filter(task => 
+      !task.completed && 
+      task.dueDate && 
+      getDueDateStatus(task.dueDate, task.completed) === 'due-today'
+    );
+
+    if (todayTasks.length > 0) {
+      NotificationManager.showNotification(
+        `You have ${todayTasks.length} task${todayTasks.length !== 1 ? 's' : ''} due today`,
+        {
+          body: todayTasks.slice(0, 3).map(t => `• ${t.title}`).join('\n'),
+          tag: 'today-tasks'
+        }
+      );
+    }
+  }
+};
 
 // Dark Mode Toggle Component
 const DarkModeToggle = ({ isDark, onToggle }) => {
@@ -44,30 +140,19 @@ const DarkModeToggle = ({ isDark, onToggle }) => {
           isDark ? 'translate-x-6' : 'translate-x-1'
         }`}
       />
-      <span className="absolute inset-0 flex items-center justify-center">
-        {isDark ? (
-          <svg className="h-3 w-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" />
-          </svg>
-        ) : (
-          <svg className="h-3 w-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
-          </svg>
-        )}
-      </span>
     </button>
   );
 };
 
-// Advanced Filters Component with Dark Mode
+// Enhanced Advanced Filters Component
 const AdvancedFilters = ({ onFilterChange, currentFilters, tasks, isDark }) => {
   const [localFilters, setLocalFilters] = useState({
     priority: currentFilters?.priority || 'all',
     category: currentFilters?.category || '',
-    sortBy: currentFilters?.sortBy || 'created-desc'
+    sortBy: currentFilters?.sortBy || 'created-desc',
+    dueDate: currentFilters?.dueDate || 'all'
   });
 
-  // Get unique categories from tasks for suggestions
   const uniqueCategories = [...new Set(tasks.map(task => task.category))].filter(Boolean);
 
   const handleFilterChange = (key, value) => {
@@ -80,17 +165,16 @@ const AdvancedFilters = ({ onFilterChange, currentFilters, tasks, isDark }) => {
     const defaultFilters = {
       priority: 'all',
       category: '',
-      sortBy: 'created-desc'
+      sortBy: 'created-desc',
+      dueDate: 'all'
     };
     setLocalFilters(defaultFilters);
     onFilterChange(defaultFilters);
   };
 
   return (
-    <div className={`border rounded-lg p-4 mb-4 ${
-      isDark 
-        ? 'bg-gray-800 border-gray-700' 
-        : 'bg-white border-gray-200'
+    <div className={`border rounded-lg p-4 mb-4 transition-colors duration-200 ${
+      isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
     }`}>
       <div className="flex flex-wrap gap-4 items-end">
         
@@ -102,10 +186,8 @@ const AdvancedFilters = ({ onFilterChange, currentFilters, tasks, isDark }) => {
           <select
             value={localFilters.priority}
             onChange={(e) => handleFilterChange('priority', e.target.value)}
-            className={`px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm ${
-              isDark 
-                ? 'bg-gray-700 border-gray-600 text-white' 
-                : 'border-gray-300 bg-white text-gray-900'
+            className={`px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm transition-colors duration-200 ${
+              isDark ? 'bg-gray-700 border-gray-600 text-white' : 'border-gray-300 bg-white text-gray-900'
             }`}
           >
             <option value="all">All Priorities</option>
@@ -125,20 +207,31 @@ const AdvancedFilters = ({ onFilterChange, currentFilters, tasks, isDark }) => {
             placeholder="Filter by category..."
             value={localFilters.category}
             onChange={(e) => handleFilterChange('category', e.target.value)}
-            className={`px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm ${
-              isDark 
-                ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
-                : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
+            className={`px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm transition-colors duration-200 ${
+              isDark ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
             }`}
           />
-          {uniqueCategories.length > 0 && (
-            <div className={`mt-1 text-xs ${
-              isDark ? 'text-gray-400' : 'text-gray-500'
-            }`}>
-              Suggestions: {uniqueCategories.slice(0, 3).join(', ')}
-              {uniqueCategories.length > 3 ? '...' : ''}
-            </div>
-          )}
+        </div>
+
+        {/* Due Date Filter */}
+        <div className="flex flex-col min-w-[160px]">
+          <label className={`text-sm font-medium mb-1 ${
+            isDark ? 'text-gray-300' : 'text-gray-700'
+          }`}>Due Date</label>
+          <select
+            value={localFilters.dueDate}
+            onChange={(e) => handleFilterChange('dueDate', e.target.value)}
+            className={`px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm transition-colors duration-200 ${
+              isDark ? 'bg-gray-700 border-gray-600 text-white' : 'border-gray-300 bg-white text-gray-900'
+            }`}
+          >
+            <option value="all">All Tasks</option>
+            <option value="overdue">Overdue</option>
+            <option value="today">Due Today</option>
+            <option value="tomorrow">Due Tomorrow</option>
+            <option value="this-week">Due This Week</option>
+            <option value="no-due-date">No Due Date</option>
+          </select>
         </div>
 
         {/* Sort Options */}
@@ -149,29 +242,25 @@ const AdvancedFilters = ({ onFilterChange, currentFilters, tasks, isDark }) => {
           <select
             value={localFilters.sortBy}
             onChange={(e) => handleFilterChange('sortBy', e.target.value)}
-            className={`px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm ${
-              isDark 
-                ? 'bg-gray-700 border-gray-600 text-white' 
-                : 'border-gray-300 bg-white text-gray-900'
+            className={`px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm transition-colors duration-200 ${
+              isDark ? 'bg-gray-700 border-gray-600 text-white' : 'border-gray-300 bg-white text-gray-900'
             }`}
           >
             <option value="created-desc">Newest First</option>
             <option value="created-asc">Oldest First</option>
             <option value="priority-desc">High Priority First</option>
-            <option value="priority-asc">Low Priority First</option>
+            <option value="due-date-asc">Due Date (Earliest)</option>
+            <option value="due-date-desc">Due Date (Latest)</option>
             <option value="title-asc">Title A-Z</option>
-            <option value="title-desc">Title Z-A</option>
           </select>
         </div>
 
-        {/* Clear Advanced Filters Button */}
+        {/* Clear Filters Button */}
         <div>
           <button
             onClick={clearAdvancedFilters}
-            className={`px-3 py-2 text-sm font-medium rounded-md border transition-colors ${
-              isDark 
-                ? 'text-gray-300 bg-gray-700 hover:bg-gray-600 border-gray-600' 
-                : 'text-gray-600 bg-gray-100 hover:bg-gray-200 border-gray-300'
+            className={`px-3 py-2 text-sm font-medium rounded-md border transition-colors duration-200 ${
+              isDark ? 'text-gray-300 bg-gray-700 hover:bg-gray-600 border-gray-600' : 'text-gray-600 bg-gray-100 hover:bg-gray-200 border-gray-300'
             }`}
           >
             Clear
@@ -180,18 +269,24 @@ const AdvancedFilters = ({ onFilterChange, currentFilters, tasks, isDark }) => {
       </div>
 
       {/* Active Filters Display */}
-      {(localFilters.priority !== 'all' || localFilters.category) && (
+      {(localFilters.priority !== 'all' || localFilters.category || localFilters.dueDate !== 'all') && (
         <div className="mt-3 flex flex-wrap gap-2">
           {localFilters.priority !== 'all' && (
             <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
               Priority: {localFilters.priority}
-              <button onClick={() => handleFilterChange('priority', 'all')} className="ml-1 text-blue-600 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-100">×</button>
+              <button onClick={() => handleFilterChange('priority', 'all')} className="ml-1 text-blue-600 hover:text-blue-800 dark:text-blue-300">×</button>
             </span>
           )}
           {localFilters.category && (
             <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
               Category: {localFilters.category}
-              <button onClick={() => handleFilterChange('category', '')} className="ml-1 text-green-600 hover:text-green-800 dark:text-green-300 dark:hover:text-green-100">×</button>
+              <button onClick={() => handleFilterChange('category', '')} className="ml-1 text-green-600 hover:text-green-800 dark:text-green-300">×</button>
+            </span>
+          )}
+          {localFilters.dueDate !== 'all' && (
+            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+              Due: {localFilters.dueDate}
+              <button onClick={() => handleFilterChange('dueDate', 'all')} className="ml-1 text-purple-600 hover:text-purple-800 dark:text-purple-300">×</button>
             </span>
           )}
         </div>
@@ -200,34 +295,41 @@ const AdvancedFilters = ({ onFilterChange, currentFilters, tasks, isDark }) => {
   );
 };
 
-// Enhanced Dashboard Component with Advanced Filters and Dark Mode
+// Enhanced Dashboard Component
 export default function Dashboard({ user, onSignOut }: DashboardProps) {
   const [tasks, setTasks] = useState<Task[]>([])
   const [newTask, setNewTask] = useState({ 
     title: "", 
     description: "", 
     priority: "MEDIUM" as "LOW" | "MEDIUM" | "HIGH",
-    category: "General"
+    category: "General",
+    dueDate: ""
   })
   const [loading, setLoading] = useState(false)
   const [filter, setFilter] = useState<"all" | "completed" | "pending">("all")
   const [isDarkMode, setIsDarkMode] = useState(false)
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false)
   
   // Advanced filters state
   const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>({
     priority: 'all',
     category: '',
-    sortBy: 'created-desc'
+    sortBy: 'created-desc',
+    dueDate: 'all'
   })
 
-  // Initialize dark mode from localStorage
+  // Initialize dark mode and notifications
   useEffect(() => {
     const savedTheme = localStorage.getItem('darkMode')
     if (savedTheme) {
       setIsDarkMode(savedTheme === 'true')
     } else {
-      // Check system preference
       setIsDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches)
+    }
+
+    // Check notification permission
+    if ('Notification' in window) {
+      setNotificationsEnabled(Notification.permission === 'granted')
     }
   }, [])
 
@@ -241,32 +343,57 @@ export default function Dashboard({ user, onSignOut }: DashboardProps) {
     localStorage.setItem('darkMode', isDarkMode.toString())
   }, [isDarkMode])
 
-  // Fetch tasks when component mounts or when advanced filters change
+  // Fetch tasks when filters change
   useEffect(() => {
     fetchTasks()
-  }, [advancedFilters])
+  }, [fetchTasks])
 
-  // Don't render if no user
+  // Check for notifications when tasks change
+  useEffect(() => {
+    if (notificationsEnabled && tasks.length > 0) {
+      // Check for overdue tasks (only show once per hour)
+      const lastNotified = localStorage.getItem('lastOverdueNotification')
+      const now = Date.now()
+      const oneHour = 60 * 60 * 1000
+
+      if (!lastNotified || now - parseInt(lastNotified) > oneHour) {
+        NotificationManager.checkOverdueTasks(tasks)
+        localStorage.setItem('lastOverdueNotification', now.toString())
+      }
+
+      // Check for today's tasks (show once per day)
+      const lastTodayNotified = localStorage.getItem('lastTodayNotification')
+      const today = new Date().toDateString()
+
+      if (lastTodayNotified !== today) {
+        NotificationManager.checkTodayTasks(tasks)
+        localStorage.setItem('lastTodayNotification', today)
+      }
+    }
+  }, [tasks, notificationsEnabled])
+
   if (!user) {
     return (
-      <div className={`min-h-screen flex items-center justify-center ${
+      <div className={`min-h-screen flex items-center justify-center transition-colors duration-200 ${
         isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'
       }`}>
         <div className="text-lg">Please sign in to view your tasks.</div>
       </div>
     )
-  } 
+  }
 
-  const fetchTasks = async () => {
+  const fetchTasks = useCallback(async () => {
     try {
       const params = new URLSearchParams();
       
-      // Add advanced filter parameters
       if (advancedFilters.priority && advancedFilters.priority !== 'all') {
         params.append('priority', advancedFilters.priority.toLowerCase());
       }
       if (advancedFilters.category && advancedFilters.category.trim()) {
         params.append('category', advancedFilters.category.trim());
+      }
+      if (advancedFilters.dueDate && advancedFilters.dueDate !== 'all') {
+        params.append('dueDate', advancedFilters.dueDate);
       }
       if (advancedFilters.sortBy && advancedFilters.sortBy !== 'created-desc') {
         params.append('sortBy', advancedFilters.sortBy);
@@ -285,7 +412,7 @@ export default function Dashboard({ user, onSignOut }: DashboardProps) {
     } catch (error) {
       console.error("Error fetching tasks:", error)
     }
-  }
+  }, [advancedFilters])
 
   const createTask = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -294,14 +421,19 @@ export default function Dashboard({ user, onSignOut }: DashboardProps) {
     setLoading(true)
     
     try {
+      const taskData = {
+        ...newTask,
+        dueDate: newTask.dueDate || null
+      }
+      
       const response = await fetch("/api/tasks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newTask)
+        body: JSON.stringify(taskData)
       })
 
       if (response.ok) {
-        setNewTask({ title: "", description: "", priority: "MEDIUM", category: "General" })
+        setNewTask({ title: "", description: "", priority: "MEDIUM", category: "General", dueDate: "" })
         await fetchTasks()
       } else {
         const errorData = await response.json()
@@ -351,7 +483,18 @@ export default function Dashboard({ user, onSignOut }: DashboardProps) {
     }
   }
 
-  // Apply basic filter (all/pending/completed) to the already fetched and sorted tasks
+  const requestNotifications = async () => {
+    const granted = await NotificationManager.requestPermission()
+    setNotificationsEnabled(granted)
+    if (granted) {
+      NotificationManager.showNotification('Notifications enabled!', {
+        body: 'You\'ll now receive notifications for overdue and upcoming tasks.',
+        tag: 'notifications-enabled'
+      })
+    }
+  }
+
+  // Apply basic filter to the fetched tasks
   const filteredTasks = tasks.filter(task => {
     if (filter === "completed") return task.completed
     if (filter === "pending") return !task.completed
@@ -361,7 +504,8 @@ export default function Dashboard({ user, onSignOut }: DashboardProps) {
   const stats = {
     total: tasks.length,
     completed: tasks.filter(t => t.completed).length,
-    pending: tasks.filter(t => !t.completed).length
+    pending: tasks.filter(t => !t.completed).length,
+    overdue: tasks.filter(t => !t.completed && getDueDateStatus(t.dueDate, t.completed) === 'overdue').length
   }
 
   const handleAdvancedFilterChange = (newFilters: AdvancedFilters) => {
@@ -388,6 +532,18 @@ export default function Dashboard({ user, onSignOut }: DashboardProps) {
               }`}>Task Tracker</h1>
             </div>
             <div className="flex items-center space-x-4">
+              {/* Notification Button */}
+              {!notificationsEnabled && (
+                <button
+                  onClick={requestNotifications}
+                  className="flex items-center space-x-2 px-3 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                >
+                  <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+                  </svg>
+                  <span>Enable Notifications</span>
+                </button>
+              )}
               <div className="flex items-center space-x-3">
                 <span className={`text-sm ${
                   isDarkMode ? 'text-gray-300' : 'text-gray-600'
@@ -397,7 +553,7 @@ export default function Dashboard({ user, onSignOut }: DashboardProps) {
               <span className={`${
                 isDarkMode ? 'text-gray-300' : 'text-gray-700'
               }`}>
-                Welcome, {user?.displayName || user?.primaryEmail}
+                Welcome, {user?.displayName || user?.primaryEmail || 'User'}
               </span>
               <button
                 onClick={onSignOut}
@@ -414,7 +570,8 @@ export default function Dashboard({ user, onSignOut }: DashboardProps) {
         <div className="px-4 py-6 sm:px-0">
           
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+            {/* Total Tasks */}
             <div className={`overflow-hidden shadow rounded-lg transition-colors duration-200 ${
               isDarkMode ? 'bg-gray-800' : 'bg-white'
             }`}>
@@ -429,20 +586,17 @@ export default function Dashboard({ user, onSignOut }: DashboardProps) {
                     <dl>
                       <dt className={`text-sm font-medium truncate ${
                         isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                      }`}>
-                        Total Tasks
-                      </dt>
+                      }`}>Total Tasks</dt>
                       <dd className={`text-lg font-medium ${
                         isDarkMode ? 'text-white' : 'text-gray-900'
-                      }`}>
-                        {stats.total}
-                      </dd>
+                      }`}>{stats.total}</dd>
                     </dl>
                   </div>
                 </div>
               </div>
             </div>
 
+            {/* Completed */}
             <div className={`overflow-hidden shadow rounded-lg transition-colors duration-200 ${
               isDarkMode ? 'bg-gray-800' : 'bg-white'
             }`}>
@@ -457,20 +611,17 @@ export default function Dashboard({ user, onSignOut }: DashboardProps) {
                     <dl>
                       <dt className={`text-sm font-medium truncate ${
                         isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                      }`}>
-                        Completed
-                      </dt>
+                      }`}>Completed</dt>
                       <dd className={`text-lg font-medium ${
                         isDarkMode ? 'text-white' : 'text-gray-900'
-                      }`}>
-                        {stats.completed}
-                      </dd>
+                      }`}>{stats.completed}</dd>
                     </dl>
                   </div>
                 </div>
               </div>
             </div>
 
+            {/* Pending */}
             <div className={`overflow-hidden shadow rounded-lg transition-colors duration-200 ${
               isDarkMode ? 'bg-gray-800' : 'bg-white'
             }`}>
@@ -485,14 +636,35 @@ export default function Dashboard({ user, onSignOut }: DashboardProps) {
                     <dl>
                       <dt className={`text-sm font-medium truncate ${
                         isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                      }`}>
-                        Pending
-                      </dt>
+                      }`}>Pending</dt>
                       <dd className={`text-lg font-medium ${
                         isDarkMode ? 'text-white' : 'text-gray-900'
-                      }`}>
-                        {stats.pending}
-                      </dd>
+                      }`}>{stats.pending}</dd>
+                    </dl>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Overdue */}
+            <div className={`overflow-hidden shadow rounded-lg transition-colors duration-200 ${
+              isDarkMode ? 'bg-gray-800' : 'bg-white'
+            }`}>
+              <div className="p-5">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
+                      <span className="text-white font-bold">{stats.overdue}</span>
+                    </div>
+                  </div>
+                  <div className="ml-5 w-0 flex-1">
+                    <dl>
+                      <dt className={`text-sm font-medium truncate ${
+                        isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                      }`}>Overdue</dt>
+                      <dd className={`text-lg font-medium ${
+                        isDarkMode ? 'text-white' : 'text-gray-900'
+                      }`}>{stats.overdue}</dd>
                     </dl>
                   </div>
                 </div>
@@ -500,34 +672,28 @@ export default function Dashboard({ user, onSignOut }: DashboardProps) {
             </div>
           </div>
 
-          {/* Task Creation Section */}
+          {/* Task Creation Form */}
           <div className={`overflow-hidden shadow rounded-lg mb-6 transition-colors duration-200 ${
             isDarkMode ? 'bg-gray-800' : 'bg-white'
           }`}>
             <div className="px-4 py-5 sm:p-6">
               <h3 className={`text-lg leading-6 font-medium mb-4 ${
                 isDarkMode ? 'text-white' : 'text-gray-900'
-              }`}>
-                Create New Task
-              </h3>
+              }`}>Create New Task</h3>
               
               <div className="space-y-4">
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
                   <div>
                     <label className={`block text-sm font-medium ${
                       isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                    }`}>
-                      Title *
-                    </label>
+                    }`}>Title *</label>
                     <input
                       type="text"
                       required
                       value={newTask.title}
                       onChange={(e) => setNewTask({...newTask, title: e.target.value})}
                       className={`mt-1 block w-full rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 px-3 py-2 border transition-colors duration-200 ${
-                        isDarkMode 
-                          ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
-                          : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
+                        isDarkMode ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
                       }`}
                       placeholder="Enter task title"
                     />
@@ -536,16 +702,12 @@ export default function Dashboard({ user, onSignOut }: DashboardProps) {
                   <div>
                     <label className={`block text-sm font-medium ${
                       isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                    }`}>
-                      Priority
-                    </label>
+                    }`}>Priority</label>
                     <select
                       value={newTask.priority}
                       onChange={(e) => setNewTask({...newTask, priority: e.target.value as "LOW" | "MEDIUM" | "HIGH"})}
                       className={`mt-1 block w-full rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 px-3 py-2 border transition-colors duration-200 ${
-                        isDarkMode 
-                          ? 'bg-gray-700 border-gray-600 text-white' 
-                          : 'border-gray-300 bg-white text-gray-900'
+                        isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : 'border-gray-300 bg-white text-gray-900'
                       }`}
                     >
                       <option value="LOW">Low Priority</option>
@@ -557,20 +719,31 @@ export default function Dashboard({ user, onSignOut }: DashboardProps) {
                   <div>
                     <label className={`block text-sm font-medium ${
                       isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                    }`}>
-                      Category *
-                    </label>
+                    }`}>Category *</label>
                     <input
                       type="text"
                       required
                       value={newTask.category}
                       onChange={(e) => setNewTask({...newTask, category: e.target.value})}
                       className={`mt-1 block w-full rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 px-3 py-2 border transition-colors duration-200 ${
-                        isDarkMode 
-                          ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
-                          : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
+                        isDarkMode ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
                       }`}
-                      placeholder="e.g., Work, Personal, Shopping"
+                      placeholder="e.g., Work, Personal"
+                    />
+                  </div>
+
+                  {/* Due Date Input */}
+                  <div>
+                    <label className={`block text-sm font-medium ${
+                      isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>Due Date</label>
+                    <input
+                      type="date"
+                      value={newTask.dueDate}
+                      onChange={(e) => setNewTask({...newTask, dueDate: e.target.value})}
+                      className={`mt-1 block w-full rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 px-3 py-2 border transition-colors duration-200 ${
+                        isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : 'border-gray-300 bg-white text-gray-900'
+                      }`}
                     />
                   </div>
                 </div>
@@ -578,17 +751,13 @@ export default function Dashboard({ user, onSignOut }: DashboardProps) {
                 <div>
                   <label className={`block text-sm font-medium ${
                     isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                  }`}>
-                    Description
-                  </label>
+                  }`}>Description</label>
                   <textarea
                     value={newTask.description}
                     onChange={(e) => setNewTask({...newTask, description: e.target.value})}
                     rows={3}
                     className={`mt-1 block w-full rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 px-3 py-2 border transition-colors duration-200 ${
-                      isDarkMode 
-                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
-                        : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
+                      isDarkMode ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
                     }`}
                     placeholder="Enter task description (optional)"
                   />
@@ -633,9 +802,7 @@ export default function Dashboard({ user, onSignOut }: DashboardProps) {
                       filter === tab.key
                         ? "border-blue-500 text-blue-600 dark:text-blue-400"
                         : `border-transparent hover:border-gray-300 ${
-                            isDarkMode 
-                              ? 'text-gray-400 hover:text-gray-300' 
-                              : 'text-gray-500 hover:text-gray-700'
+                            isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'
                           }`
                     }`}
                   >
@@ -651,9 +818,7 @@ export default function Dashboard({ user, onSignOut }: DashboardProps) {
             }`}>
               {filteredTasks.length === 0 ? (
                 <div className="px-6 py-8 text-center">
-                  <p className={`${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                  }`}>
+                  <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                     {filter === "all" 
                       ? "No tasks match your current filters." 
                       : `No ${filter} tasks match your current filters.`
@@ -661,76 +826,92 @@ export default function Dashboard({ user, onSignOut }: DashboardProps) {
                   </p>
                 </div>
               ) : (
-                filteredTasks.map((task) => (
-                  <div key={task.id} className="px-6 py-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3 flex-1">
-                        <input
-                          type="checkbox"
-                          checked={task.completed}
-                          onChange={() => toggleTask(task.id, task.completed)}
-                          className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                        />
-                        <div className="flex-1">
-                          <h4 className={`text-sm font-medium ${
-                            task.completed 
-                              ? `line-through ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}` 
-                              : `${isDarkMode ? 'text-white' : 'text-gray-900'}`
-                          }`}>
-                            {task.title}
-                          </h4>
-                          {task.description && (
-                            <p className={`text-sm ${
+                filteredTasks.map((task) => {
+                  const dueDateStatus = getDueDateStatus(task.dueDate, task.completed);
+                  const dueDateText = formatDueDate(task.dueDate);
+                  
+                  return (
+                    <div key={task.id} className="px-6 py-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3 flex-1">
+                          <input
+                            type="checkbox"
+                            checked={task.completed}
+                            onChange={() => toggleTask(task.id, task.completed)}
+                            className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                          />
+                          <div className="flex-1">
+                            <h4 className={`text-sm font-medium ${
                               task.completed 
-                                ? `${isDarkMode ? 'text-gray-600' : 'text-gray-400'}` 
-                                : `${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`
+                                ? `line-through ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}` 
+                                : `${isDarkMode ? 'text-white' : 'text-gray-900'}`
                             }`}>
-                              {task.description}
-                            </p>
-                          )}
-                          <div className="flex items-center space-x-2 mt-1">
-                            <p className={`text-xs ${
-                              isDarkMode ? 'text-gray-500' : 'text-gray-400'
-                            }`}>
-                              Created {new Date(task.createdAt).toLocaleDateString()}
-                            </p>
-                            <span className={`text-xs ${
-                              isDarkMode ? 'text-gray-500' : 'text-gray-400'
-                            }`}>•</span>
-                            <span className={`text-xs px-2 py-1 rounded ${
-                              isDarkMode 
-                                ? 'text-blue-400 bg-blue-900/50' 
-                                : 'text-blue-600 bg-blue-50'
-                            }`}>
-                              {task.category}
-                            </span>
+                              {task.title}
+                            </h4>
+                            {task.description && (
+                              <p className={`text-sm ${
+                                task.completed 
+                                  ? `${isDarkMode ? 'text-gray-600' : 'text-gray-400'}` 
+                                  : `${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`
+                              }`}>
+                                {task.description}
+                              </p>
+                            )}
+                            <div className="flex items-center space-x-2 mt-1">
+                              <p className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                                Created {new Date(task.createdAt).toLocaleDateString()}
+                              </p>
+                              <span className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>•</span>
+                              <span className={`text-xs px-2 py-1 rounded ${
+                                isDarkMode ? 'text-blue-400 bg-blue-900/50' : 'text-blue-600 bg-blue-50'
+                              }`}>
+                                {task.category}
+                              </span>
+                              {/* Due Date Badge */}
+                              {dueDateText && (
+                                <>
+                                  <span className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>•</span>
+                                  <span className={`text-xs px-2 py-1 rounded font-medium ${
+                                    dueDateStatus === 'overdue' 
+                                      ? 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-400' 
+                                      : dueDateStatus === 'due-today'
+                                      ? 'bg-orange-100 text-orange-800 dark:bg-orange-900/50 dark:text-orange-400'
+                                      : dueDateStatus === 'due-tomorrow' 
+                                      ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-400'
+                                      : dueDateStatus === 'due-this-week'
+                                      ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-400'
+                                      : `${isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'}`
+                                  }`}>
+                                    {dueDateText}
+                                  </span>
+                                </>
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          task.priority === 'HIGH' 
-                            ? 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-400' 
-                            : task.priority === 'MEDIUM' 
-                            ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-400' 
-                            : 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400'
-                        }`}>
-                          {task.priority}
-                        </span>
-                        <button
-                          onClick={() => deleteTask(task.id)}
-                          className={`text-sm transition-colors duration-200 ${
-                            isDarkMode 
-                              ? 'text-red-400 hover:text-red-300' 
-                              : 'text-red-600 hover:text-red-800'
-                          }`}
-                        >
-                          Delete
-                        </button>
+                        <div className="flex items-center space-x-2">
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            task.priority === 'HIGH' 
+                              ? 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-400' 
+                              : task.priority === 'MEDIUM' 
+                              ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-400' 
+                              : 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400'
+                          }`}>
+                            {task.priority}
+                          </span>
+                          <button
+                            onClick={() => deleteTask(task.id)}
+                            className={`text-sm transition-colors duration-200 ${
+                              isDarkMode ? 'text-red-400 hover:text-red-300' : 'text-red-600 hover:text-red-800'
+                            }`}
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))
+                  )
+                })
               )}
             </div>
           </div>
