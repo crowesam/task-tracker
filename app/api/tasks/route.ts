@@ -79,6 +79,7 @@ export async function GET(request: NextRequest) {
     const priority = searchParams.get('priority');
     const category = searchParams.get('category');
     const completed = searchParams.get('completed');
+    const sortBy = searchParams.get('sortBy') || 'created-desc';
 
     // Build Prisma where clause - USE dbUser.id instead of user.id
     const where: import("@prisma/client").Prisma.TaskWhereInput = { userId: dbUser.id };
@@ -91,19 +92,49 @@ export async function GET(request: NextRequest) {
       }
     }
     if (category) {
-      where.category = category;
+      where.category = {
+        contains: category,
+        mode: 'insensitive' // Case-insensitive search
+      };
     }
-    if (completed !== null) {
+    if (completed !== null && completed !== 'all') {
       where.completed = completed === 'true';
+    }
+
+    // Build dynamic sorting
+    let orderBy: import("@prisma/client").Prisma.TaskOrderByWithRelationInput[] = [];
+    
+    switch (sortBy) {
+      case 'created-asc':
+        orderBy = [{ createdAt: 'asc' }];
+        break;
+      case 'created-desc':
+        orderBy = [{ createdAt: 'desc' }];
+        break;
+      case 'priority-desc':
+        orderBy = [{ priority: 'desc' }, { createdAt: 'desc' }];
+        break;
+      case 'priority-asc':
+        orderBy = [{ priority: 'asc' }, { createdAt: 'desc' }];
+        break;
+      case 'title-asc':
+        orderBy = [{ title: 'asc' }];
+        break;
+      case 'title-desc':
+        orderBy = [{ title: 'desc' }];
+        break;
+      default:
+        // Default: completed tasks last, then by priority, then by creation date
+        orderBy = [
+          { completed: 'asc' },
+          { priority: 'desc' },
+          { createdAt: 'desc' }
+        ];
     }
 
     const tasks = await prisma.task.findMany({
       where,
-      orderBy: [
-        { completed: 'asc' },
-        { priority: 'desc' }, // HIGH > MEDIUM > LOW
-        { createdAt: 'desc' }
-      ]
+      orderBy
     });
 
     return NextResponse.json(tasks)
