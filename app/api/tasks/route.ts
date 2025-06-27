@@ -102,7 +102,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const user = await stackServerApp.getUser()
-    
+     
     if (!user) {
       return NextResponse.json(
         { error: "Unauthorized" },
@@ -110,23 +110,48 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Check if user exists in database, create if not
+    let dbUser = await prisma.user.findUnique({
+      where: { id: user.id }
+    });
+
+    if (!dbUser) {
+      try {
+        // Auto-create user in database
+        dbUser = await prisma.user.create({
+          data: {
+            id: user.id,
+            email: user.primaryEmail || '',
+            name: user.displayName || null,
+          }
+        });
+        console.log('Created new user in database:', dbUser.id);
+      } catch (emailError) {
+        // If email already exists, find that user instead
+        dbUser = await prisma.user.findUnique({
+          where: { email: user.primaryEmail || '' }
+        });
+        if (!dbUser) throw emailError;
+      }
+    }
+
+    // Get the request body and validate
     const body = await request.json()
-    
-    // Validate the request data
     const validatedData = validateCreateTask(body);
 
+    // Create the task
     const newTask = await prisma.task.create({
       data: {
         ...validatedData,
-        userId: user.id,
+        userId: dbUser.id,
       }
     });
 
     return NextResponse.json(newTask, { status: 201 })
-    
+      
   } catch (error) {
     console.error('POST /api/tasks error:', error);
-    
+        
     if (error instanceof Error) {
       return NextResponse.json(
         { error: error.message },
