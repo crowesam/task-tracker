@@ -1,74 +1,23 @@
-// app/api/tasks/reorder/route.ts
-import { NextResponse } from "next/server"
-import { stackServerApp } from "@/stack"  // Stack Auth instead of NextAuth
-import { prisma } from "@/lib/prisma"
+import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
 
-export async function POST(request: Request) {
+export async function POST(req: Request) {
   try {
-    // Get authenticated user with Stack Auth
-    const user = await stackServerApp.getUser()
-    
-    if (!user) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
+    const { orderedIds }: { orderedIds: string[] } = await req.json();
+
+    // Update each task's `order` value based on its position in the array
+    const updates = await Promise.all(
+      orderedIds.map((id, index) =>
+        prisma.task.update({
+          where: { id },
+          data: { order: index }, // assuming your Task model has an `order` field
+        })
       )
-    }
-   //Sam added 6/26/25 to fix user id issue 
-   // DEBUG: Log the user data
-    console.log('Stack Auth User:', {
-      id: user.id,
-      email: user.primaryEmail,
-      // Add any other user properties you want to see
-    });
+    );
 
- // DEBUG: Check if user exists in database
-    const dbUser = await prisma.user.findUnique({
-      where: { id: user.id }
-    });
-    console.log('Database User:', dbUser);
-
-
-  if (!dbUser) {
-      console.error('User not found in database:', user.id);
-      return NextResponse.json(
-        { error: "User not found in database" },
-        { status: 404 }
-      );
-    }
-
-
-
-    const { taskId, newOrder } = await request.json()
-    
-    // Verify the task belongs to the user before reordering
-    const task = await prisma.task.findFirst({
-      where: {
-        id: taskId,
-        userId: user.id
-      }
-    })
-    
-    if (!task) {
-      return NextResponse.json(
-        { error: "Task not found or unauthorized" },
-        { status: 404 }
-      )
-    }
-    
-    // Update the task order
-    const updatedTask = await prisma.task.update({
-      where: { id: taskId },
-      data: { order: newOrder }
-    })
-    
-    return NextResponse.json(updatedTask)
-    
+    return NextResponse.json({ success: true, updates });
   } catch (error) {
-    console.error("Error reordering task:", error)
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    )
+    console.error("Error reordering tasks:", error);
+    return new NextResponse("Failed to reorder tasks", { status: 500 });
   }
 }

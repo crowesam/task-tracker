@@ -1,40 +1,46 @@
-"use client"
-import { useUser } from "@stackframe/stack"
-import { useRouter } from "next/navigation"
-import { useEffect } from "react"
-import Dashboard from "../../components/Dashboard"
+// pages/app/dashboard/page.tsx
+
+"use client";
+
+import { useUser } from "@stackframe/stack";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import Dashboard from "@/components/Dashboard";
 
 export default function DashboardPage() {
-  const user = useUser()
-  const router = useRouter()
+  const user = useUser();
+  const router = useRouter();
 
   useEffect(() => {
     if (user === null) {
-      router.push("/sign-in")  
+      router.push("/sign-in");
     }
-  }, [user, router])
+  }, [user, router]);
 
   if (user === undefined) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-lg">Loading...</div>
       </div>
-    )
+    );
   }
 
   const handleSignOut = async () => {
     try {
-      await user?.signOut()
+      await user?.signOut();
     } catch (error) {
-      console.error('Sign out failed:', error)
+      console.error("Sign out failed:", error);
     }
-  }
+  };
 
-  // Transform the user object to match our interface
-  const dashboardUser = user ? {
-    displayName: user.displayName,
-    primaryEmail: user.primaryEmail
-  } : null
+  const dashboardUser = user
+    ? {
+        displayName: user.displayName ?? "",
+        primaryEmail: user.primaryEmail ?? "",
+      }
+    : null;
 
-  return <Dashboard user={dashboardUser} onSignOut={handleSignOut} />
+  return <Dashboard user={dashboardUser} onSignOut={handleSignOut} />;
 }
+
+

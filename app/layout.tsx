@@ -1,8 +1,7 @@
-// app/layout.tsx
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
-import { StackProvider, StackTheme } from "@stackframe/stack"  // ← ADD THIS IMPORT
+import { StackProvider, StackTheme } from "@stackframe/stack"
 import { stackServerApp } from "@/stack"
 
 const inter = Inter({ subsets: ["latin"] })
