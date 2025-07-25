@@ -1,6 +1,6 @@
 // app/api/tasks/route.ts
 import { NextRequest, NextResponse } from "next/server"
-import { stackServerApp } from "@/stack"
+import { stackServerApp } from "@/stack-auth"
 import { prisma } from "@/lib/prisma"
 
 // Validation function for creating tasks

@@ -1,6 +1,6 @@
 // app/api/tasks/[id]/route.ts
 import { NextResponse } from "next/server"
-import { stackServerApp } from "@/stack"
+import { stackServerApp } from "@/stack-auth"
 import { prisma } from "@/lib/prisma"
 
 // GET a specific task
