@@ -213,7 +213,7 @@ export default function LandingPage() {
             { icon: "🌙", title: "Dark Mode", description: "Easy on the eyes" },
             { icon: "📱", title: "Responsive Design", description: "Perfect on any device" },
             { icon: "⚡", title: "Real-time Sync", description: "Instant updates everywhere" },
-            { icon: "🔒", title: "Secure Auth", description: "Enterprise-grade security" },
+            { icon:  Shield, title: "Secure Auth", description: "Enterprise-grade security" },
             { icon: "🎵", title: "Sound Effects", description: "Delightful audio feedback" }
           ].map((feature, index) => (
             <div
@@ -278,7 +278,7 @@ export default function LandingPage() {
               Beautiful task management for modern teams
             </p>
             <p className="text-white/40 text-sm">
-              © 2025 Medilios. All rights reserved.
+              © 2025 The Creative Crowe,LLC. All rights reserved.
             </p>
           </div>
         </div>
