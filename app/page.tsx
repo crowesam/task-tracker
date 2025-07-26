@@ -6,8 +6,7 @@ import { useUser } from '@stackframe/stack';
 import { 
   CheckCircle, 
   Users, 
-  Zap, 
-  Shield,
+  Zap,   
   ArrowRight,
   Sparkles,
   Moon,
@@ -213,7 +212,7 @@ export default function LandingPage() {
             { icon: "🌙", title: "Dark Mode", description: "Easy on the eyes" },
             { icon: "📱", title: "Responsive Design", description: "Perfect on any device" },
             { icon: "⚡", title: "Real-time Sync", description: "Instant updates everywhere" },
-            { icon:  Shield, title: "Secure Auth", description: "Enterprise-grade security" },
+            { icon: "🔒", title: "Secure Auth", description: "Enterprise-grade security" },
             { icon: "🎵", title: "Sound Effects", description: "Delightful audio feedback" }
           ].map((feature, index) => (
             <div
