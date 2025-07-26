@@ -7,7 +7,6 @@ import {
   CheckCircle, 
   Users, 
   Zap, 
-  Shield,
   ArrowRight,
   Sparkles,
   Moon,
