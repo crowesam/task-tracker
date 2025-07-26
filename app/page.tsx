@@ -6,7 +6,7 @@ import { useUser } from '@stackframe/stack';
 import { 
   CheckCircle, 
   Users, 
-  Zap,   
+  Zap,  
   ArrowRight,
   Sparkles,
   Moon,
