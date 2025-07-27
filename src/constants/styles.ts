@@ -66,6 +66,9 @@ export const TRANSITIONS = {
   scaleSmall: 'hover:scale-[1.02]',
 } as const;
 
+// Gradient text
+export const GRADIENT_TEXT = 'bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent';
+
 // Helper functions
 export const getGlassClasses = (
   variant: keyof typeof GLASS_EFFECTS,
