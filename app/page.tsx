@@ -30,12 +30,7 @@ export default function LandingPage() {
     localStorage.setItem('darkMode', JSON.stringify(darkMode));
   }, [darkMode]);
 
-  // Redirect authenticated users to dashboard
-  useEffect(() => {
-    if (user) {
-      window.location.href = '/dashboard';
-    }
-  }, [user]);
+ 
 
   const playSound = (type: string) => {
     try {
