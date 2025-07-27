@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useUser } from '@stackframe/stack';
+// import { useUser } from '@stackframe/stack';
 import { 
   CheckCircle, 
   Users, 
@@ -15,7 +15,7 @@ import {
 
 export default function LandingPage() {
   const [darkMode, setDarkMode] = useState(false);
-  const user = useUser();
+
 
   // Load theme preference
   useEffect(() => {
