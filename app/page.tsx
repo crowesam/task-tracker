@@ -135,7 +135,7 @@ export default function LandingPage() {
             </Link>
             
             <Link 
-              href="/demo"
+              href="/demo" 
               className={`px-8 py-4 rounded-full backdrop-blur-md transition-all duration-300 hover:scale-105 
                          border font-semibold text-lg ${
                 darkMode
