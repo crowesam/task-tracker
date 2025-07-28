@@ -25,4 +25,4 @@ export default function RootLayout({
       </body>
     </html>
   );
-}// Force fresh deployment - Phase 2 architecture ready!
+}
