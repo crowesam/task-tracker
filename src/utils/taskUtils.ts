@@ -3,12 +3,15 @@ import { Task, PriorityType } from '../types';
 
 export const createTask = (
   text: string, 
-  priority: PriorityType = 'medium'
+  priority: PriorityType = 'medium',
+  category?: string
 ): Task => ({
   id: Date.now(),
   text: text.trim(),
   completed: false,
   priority,
+  createdAt: new Date(),
+  category,
 });
 
 export const toggleTaskCompletion = (tasks: Task[], taskId: number): Task[] => {

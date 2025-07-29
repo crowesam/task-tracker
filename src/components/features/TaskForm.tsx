@@ -38,7 +38,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({
     setIsSubmitting(true);
     
     try {
-      const newTask = createTask(taskText, priority);
+      const newTask = createTask(taskText.trim(), priority);
       onAddTask(newTask);
       
       // Reset form
@@ -74,17 +74,9 @@ export const TaskForm: React.FC<TaskFormProps> = ({
     { value: 'high', label: 'High', color: 'text-red-400' },
   ];
 
-  const addButtonClasses = combineClasses(
-    'w-full p-4 rounded-xl border-2 border-dashed transition-all duration-300',
-    'hover:scale-[1.02] flex items-center justify-center gap-3',
-    darkMode 
-      ? 'border-white/30 text-white/70 hover:border-white/50 hover:bg-white/5' 
-      : 'border-gray-300 text-gray-600 hover:border-gray-400 hover:bg-white/50'
-  );
-
   if (!showForm) {
     return (
-      <Card darkMode={darkMode} padding="md">
+      <Card darkMode={darkMode} padding={'md' as const}>
         <Button
           onClick={onToggleForm}
           variant="ghost"
@@ -102,7 +94,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({
   return (
     <Card 
       darkMode={darkMode} 
-      padding="md"
+      padding={'md' as const}
       role="form" 
       aria-label="New task form"
     >
@@ -153,7 +145,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({
                   option.color
                 )}
                 type="button"
-                aria-pressed={priority === option.value}
+                aria-pressed={priority === option.value ? 'true' : 'false'}
               >
                 {option.label}
               </button>
@@ -180,7 +172,9 @@ export const TaskForm: React.FC<TaskFormProps> = ({
             disabled={isSubmitting}
             aria-label="Cancel adding task and close form"
             icon={<X size={20} />}
-          />
+          >
+            Cancel
+          </Button>
         </div>
       </div>
     </Card>

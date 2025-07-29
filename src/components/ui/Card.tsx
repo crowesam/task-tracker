@@ -1,6 +1,6 @@
 // src/components/ui/Card.tsx
 import React from 'react';
-import { combineClasses, createCardClasses } from '@/src/utils';
+import { combineClasses } from '@/src/utils';
 import { getGlassClasses, TRANSITIONS } from '@/src/constants';
 import { AccessibilityProps } from '@/src/types';
 
@@ -38,7 +38,6 @@ export const Card: React.FC<CardProps> = ({
         return combineClasses(
           baseGlass,
           TRANSITIONS.default,
-          TRANSITIONS.scaleSmall,
           'cursor-pointer',
           darkMode ? 'hover:bg-white/15' : 'hover:bg-white/80'
         );
