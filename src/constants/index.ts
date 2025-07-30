@@ -5,6 +5,9 @@ export * from './sampleData';
 // Replace the FLOATING_EFFECTS in src/constants/index.ts with this:
 export const FLOATING_EFFECTS = {
   light: {
+    primary: 'rgba(255, 165, 0, 0.3)',     // Orange
+    secondary: 'rgba(0, 255, 255, 0.25)',  // Cyan
+    tertiary: 'rgba(255, 255, 0, 0.2)',    // Yellow
     particles: {
       enabled: true,
       count: 50,
@@ -25,7 +28,7 @@ export const FLOATING_EFFECTS = {
       shapes: ['circle', 'triangle', 'square'],
       colors: [
         'rgba(255, 165, 0, 0.2)',  // Orange
-        'rgba(0, 255, 255, 0.15)', // Cyan
+        'rgba(0, 255, 255, 0.15)', // Cyan  
         'rgba(255, 255, 0, 0.15)', // Yellow
         'rgba(128, 0, 128, 0.1)'   // Purple
       ],
@@ -38,6 +41,9 @@ export const FLOATING_EFFECTS = {
     }
   },
   dark: {
+    primary: 'rgba(255, 165, 0, 0.15)',    // Dimmer orange
+    secondary: 'rgba(0, 255, 255, 0.1)',   // Dimmer cyan
+    tertiary: 'rgba(255, 255, 0, 0.1)',    // Dimmer yellow
     particles: {
       enabled: true,
       count: 40,
