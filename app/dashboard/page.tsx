@@ -1,6 +1,7 @@
 // app/dashboard/page.tsx - CORRECTED VERSION
 'use client'
-
+// Add this import to your dashboard
+import { BackgroundEffects } from '@/src/components/layout/BackgroundEffects';
 import React, { useState, useEffect } from 'react';
 import { useUser } from '@stackframe/stack';
 import { useRouter } from 'next/navigation';
@@ -140,7 +141,9 @@ export default function Dashboard() {
       darkMode 
         ? 'bg-gradient-to-br from-slate-900 via-teal-900 to-slate-900' 
         : 'bg-gradient-to-br from-yellow-400 via-green-400 via-teal-500 to-purple-600'
-    )}>
+    )}> 
+      {/* Background Effects */}
+       <BackgroundEffects darkMode={darkMode} variant="enhanced" animated={true} />
       {/* Header Navigation */}
       <nav className="relative z-10 p-6">
         <div className="max-w-7xl mx-auto flex justify-between items-center">

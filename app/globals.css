@@ -176,4 +176,69 @@ button, input, textarea, select {
   box-shadow: 0 0 20px rgba(255, 255, 255, 0.2), 
               0 0 40px rgba(255, 255, 255, 0.1),
               0 8px 32px rgba(0, 0, 0, 0.1);
+} 
+
+/* Add these to your globals.css for beautiful card hover effects */
+
+/* Enhanced Card Hover - Professional Levitation */
+.card-hover-enhanced {
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-style: preserve-3d;
+}
+
+.card-hover-enhanced:hover {
+  transform: translateY(-8px) scale(1.03) rotateX(5deg);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.2),
+    0 0 20px rgba(255, 165, 0, 0.1);
+}
+
+/* Subtle Float Animation */
+.card-float-subtle {
+  animation: float-subtle 6s ease-in-out infinite;
+}
+
+@keyframes float-subtle {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  25% { transform: translateY(-2px) rotate(0.5deg); }
+  50% { transform: translateY(-4px) rotate(0deg); }
+  75% { transform: translateY(-2px) rotate(-0.5deg); }
+}
+
+/* Glow Pulse on Hover */
+.card-glow-pulse:hover {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+@keyframes glow-pulse {
+  0%, 100% { 
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.1),
+      0 0 0 1px rgba(255, 255, 255, 0.1);
+  }
+  50% { 
+    box-shadow: 
+      0 12px 40px rgba(0, 0, 0, 0.2),
+      0 0 0 1px rgba(255, 255, 255, 0.3),
+      0 0 30px rgba(255, 165, 0, 0.2);
+  }
+}
+
+/* Tilt Effect on Hover */
+.card-tilt:hover {
+  transform: perspective(1000px) rotateX(10deg) rotateY(5deg) translateZ(20px);
+}
+
+/* Magnetic Hover Effect */
+.card-magnetic {
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.card-magnetic:hover {
+  transform: translateY(-12px) scale(1.05);
+  box-shadow: 
+    0 25px 50px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(255, 255, 255, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
