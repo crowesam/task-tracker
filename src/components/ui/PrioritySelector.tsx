@@ -41,38 +41,34 @@ const PrioritySelector: React.FC<PrioritySelectorProps> = ({
         Priority Level
       </label>
       
-      <div className="grid grid-cols-3 gap-4">
+      {/* SINGLE ROW LAYOUT - COMPACT */}
+      <div className="flex gap-3">
         {priorities.map((priority) => (
           <button
             key={priority.value}
             type="button"
             onClick={() => onPriorityChange(priority.value)}
             className={`
-              relative px-6 py-4 rounded-xl font-semibold text-white text-sm
+              flex-1 px-4 py-3 rounded-xl font-semibold text-white text-sm
               bg-gradient-to-r ${priority.gradient}
               transition-all duration-300 ease-out
-              hover:scale-105 hover:-translate-y-1 hover:shadow-xl ${priority.shadow}
+              hover:scale-105 hover:-translate-y-0.5 hover:shadow-lg ${priority.shadow}
               focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-transparent
               ${selectedPriority === priority.value 
-                ? `scale-105 -translate-y-1 shadow-xl ${priority.activeShadow} ring-2 ring-white/30` 
+                ? `scale-105 -translate-y-0.5 shadow-lg ${priority.activeShadow} ring-2 ring-white/30` 
                 : ''
               }
             `}
-            style={{
-              background: selectedPriority === priority.value 
-                ? `linear-gradient(135deg, var(--tw-gradient-from), var(--tw-gradient-to)), linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05))`
-                : undefined
-            }}
           >
             {/* Priority indicator dot */}
             <div className={`
-              absolute top-3 left-3 w-2 h-2 rounded-full
+              w-2 h-2 rounded-full mx-auto mb-1
               ${selectedPriority === priority.value ? 'bg-white/80' : 'bg-white/50'}
               transition-all duration-300
             `} />
             
             {/* Button text */}
-            <span className="relative z-10 tracking-wide">
+            <span className="text-xs font-bold tracking-wide uppercase">
               {priority.label}
             </span>
             
@@ -85,20 +81,12 @@ const PrioritySelector: React.FC<PrioritySelectorProps> = ({
                 animate-pulse
               `} />
             )}
-            
-            {/* Hover glow effect */}
-            <div className={`
-              absolute inset-0 rounded-xl opacity-0 group-hover:opacity-20
-              bg-gradient-to-r ${priority.gradient}
-              blur-md scale-110 -z-10
-              transition-opacity duration-300
-            `} />
           </button>
         ))}
       </div>
       
       {/* Helper text */}
-      <p className="text-white/60 text-xs mt-2">
+      <p className="text-white/60 text-xs">
         Priority affects the colored corner indicator on your task card
       </p>
     </div>
