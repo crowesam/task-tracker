@@ -66,7 +66,7 @@ export const BackgroundEffects: React.FC<BackgroundEffectsProps> = ({
     },
     {
       color: effects.accent,
-      size: 'medium' as const,
+      size: 'small' as const,
       position: 'top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2',
       opacity: 'opacity-25',
     },

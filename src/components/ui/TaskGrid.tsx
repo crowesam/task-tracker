@@ -1,13 +1,14 @@
 // src/components/ui/TaskGrid.tsx - ADD onEdit prop
 import GlassTaskCard from './GlassTaskCard';
+import { FrontendTask } from '@/src/types';
 
 interface TaskGridProps {
-  tasks: Task[];
+   tasks: FrontendTask[];  
   onToggleComplete: (id: string) => void;
   onDelete: (id: string) => void;
   onEdit: (id: string) => void;  // 👈 ADD THIS
 }
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+ 
 const TaskGrid: React.FC<TaskGridProps> = ({
   tasks, 
   onToggleComplete, 
