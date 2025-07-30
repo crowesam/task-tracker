@@ -1,18 +1,17 @@
 // src/components/features/TaskList.tsx
-import React, { useState } from 'react';
+import React from 'react';
 import { TaskItem } from './TaskItem';
 import { Card } from '@/src/components/ui';
-import { getTasksByCompletion } from '@/src/utils';
-import { Task } from '@/src/types';
+import { FrontendTask } from '@/src/types';
+import { FilterState } from '@/src/types/filters';
 
 interface TaskListProps {
-  tasks: Task[];
+  tasks: FrontendTask[];
   darkMode: boolean;
-  onToggleTask: (id: number) => void;
-  onDeleteTask: (id: number) => void;
-  onReorderTasks: (fromIndex: number, toIndex: number) => void;
-  showCompleted?: boolean;
-  groupByCompletion?: boolean;
+  onToggleTask: (id: string) => void;
+  onDeleteTask: (id: string) => void;
+  onUpdateDueDate?: (id: string, dueDate: Date | null) => void;
+  filters: FilterState;
 }
 
 export const TaskList: React.FC<TaskListProps> = ({
@@ -20,147 +19,96 @@ export const TaskList: React.FC<TaskListProps> = ({
   darkMode,
   onToggleTask,
   onDeleteTask,
-  onReorderTasks,
-  showCompleted = true,
-  groupByCompletion = false,
+  onUpdateDueDate,
+  filters,
 }) => {
-  const [draggedItem, setDraggedItem] = useState<number | null>(null);
-
-  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, index: number): void => {
-    setDraggedItem(index);
-    if (e.dataTransfer) {
-      e.dataTransfer.effectAllowed = 'move';
+  // Apply filters to tasks
+  const filteredTasks = tasks.filter(task => {
+    // Category filter
+    if (filters.selectedCategory && task.category !== filters.selectedCategory) {
+      return false;
     }
-  };
 
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>): void => {
-    e.preventDefault();
-    if (e.dataTransfer) {
-      e.dataTransfer.dropEffect = 'move';
+    // Tags filter (show if task has ANY of the selected tags)
+    if (filters.selectedTags.length > 0) {
+      const hasSelectedTag = filters.selectedTags.some(selectedTag => 
+        task.tags.includes(selectedTag)
+      );
+      if (!hasSelectedTag) {
+        return false;
+      }
     }
-  };
 
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>, dropIndex: number): void => {
-    e.preventDefault();
-    
-    if (draggedItem === null) return;
-    
-    const fromIndex = draggedItem;
-    if (fromIndex !== dropIndex) {
-      onReorderTasks(fromIndex, dropIndex);
+    // Search filter
+    if (filters.searchQuery) {
+      const searchLower = filters.searchQuery.toLowerCase();
+      const matchesSearch = 
+        task.text.toLowerCase().includes(searchLower) ||
+        task.category?.toLowerCase().includes(searchLower) ||
+        task.tags.some(tag => tag.toLowerCase().includes(searchLower));
+      
+      if (!matchesSearch) {
+        return false;
+      }
     }
-    
-    setDraggedItem(null);
-  };
 
-  const handleDragEnd = (): void => {
-    setDraggedItem(null);
-  };
+    // Completion filter
+    if (!filters.showCompleted && task.completed) {
+      return false;
+    }
 
-  // Filter tasks based on showCompleted
-  const filteredTasks = showCompleted 
-    ? tasks 
-    : tasks.filter(task => !task.completed);
-
-  // Group tasks if requested
-  const taskGroups = groupByCompletion 
-    ? getTasksByCompletion(filteredTasks)
-    : { all: filteredTasks };
+    return true;
+  });
 
   const EmptyState: React.FC<{ message: string }> = ({ message }) => (
-    <Card 
-      darkMode={darkMode} 
-      padding="xl" 
-      className="text-center"
-      role="status"
-      aria-live="polite"
-    >
-      <div className={`${darkMode ? 'text-white/60' : 'text-gray-500'}`}>
-        <p className="text-lg">{message}</p>
-      </div>
-    </Card>
-  );
-
-  const TaskSection: React.FC<{ 
-    title?: string;
-    tasks: Task[];
-    startIndex: number;
-  }> = ({ title, tasks: sectionTasks, startIndex }) => (
-    <div>
-      {title && (
-        <h3 className={`text-lg font-semibold mb-4 ${
-          darkMode ? 'text-white' : 'text-gray-800'
-        }`}>
-          {title} ({sectionTasks.length})
-        </h3>
-      )}
-      
-      <div className="space-y-4" role="list">
-        {sectionTasks.map((task, index) => {
-          const actualIndex = startIndex + index;
-          return (
-            <TaskItem
-              key={task.id}
-              task={task}
-              index={actualIndex}
-              darkMode={darkMode}
-              onToggle={onToggleTask}
-              onDelete={onDeleteTask}
-              onDragStart={handleDragStart}
-              onDragOver={handleDragOver}
-              onDrop={handleDrop}
-              isDragging={draggedItem === actualIndex}
-            />
-          );
-        })}
-      </div>
+    <div className="col-span-full">
+      <Card 
+        darkMode={darkMode} 
+        padding="xl" 
+        className="text-center backdrop-blur-md"
+        role="status"
+        aria-live="polite"
+      >
+        <div className={`${darkMode ? 'text-white/60' : 'text-gray-500'}`}>
+          <p className="text-lg">{message}</p>
+        </div>
+      </Card>
     </div>
   );
 
   // Handle empty states
   if (tasks.length === 0) {
     return (
-      <EmptyState message="No tasks yet. Add one above to get started!" />
+      <div className="grid grid-cols-1 gap-3">
+        <EmptyState message="No tasks yet. Add one above to get started!" />
+      </div>
     );
   }
 
-  if (filteredTasks.length === 0 && !showCompleted) {
+  if (filteredTasks.length === 0) {
     return (
-      <EmptyState message="No incomplete tasks! 🎉" />
+      <div className="grid grid-cols-1 gap-3">
+        <EmptyState message="No tasks match your current filters." />
+      </div>
     );
   }
 
   return (
-    <section aria-label="Task list" onDragEnd={handleDragEnd}>
+    <section aria-label="Task list">
       <h2 className="sr-only">Your Tasks</h2>
       
-      <div className="space-y-6">
-        {groupByCompletion ? (
-          <>
-            {/* Incomplete Tasks */}
-            {taskGroups.incomplete && taskGroups.incomplete.length > 0 && (
-              <TaskSection
-                title="To Do"
-                tasks={taskGroups.incomplete}
-                startIndex={0}
-              />
-            )}
-            
-            {/* Completed Tasks */}
-            {showCompleted && taskGroups.completed && taskGroups.completed.length > 0 && (
-              <TaskSection
-                title="Completed"
-                tasks={taskGroups.completed}
-                startIndex={taskGroups.incomplete?.length || 0}
-              />
-            )}
-          </>
-        ) : (
-          <TaskSection
-            tasks={filteredTasks}
-            startIndex={0}
+      {/* Task Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+        {filteredTasks.map((task) => (
+          <TaskItem
+            key={task.id}
+            task={task}
+            darkMode={darkMode}
+            onToggle={onToggleTask}
+            onDelete={onDeleteTask}
+            onUpdateDueDate={onUpdateDueDate}
           />
-        )}
+        ))}
       </div>
 
       {/* Task Statistics */}
@@ -168,7 +116,10 @@ export const TaskList: React.FC<TaskListProps> = ({
         darkMode ? 'text-white/60' : 'text-gray-500'
       }`}>
         <p>
-          {tasks.filter(t => t.completed).length} of {tasks.length} tasks completed
+          Showing {filteredTasks.length} of {tasks.length} tasks
+          {filteredTasks.filter(t => t.completed).length > 0 && (
+            <span> • {filteredTasks.filter(t => t.completed).length} completed</span>
+          )}
         </p>
       </div>
     </section>

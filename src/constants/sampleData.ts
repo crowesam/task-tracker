@@ -1,46 +1,60 @@
 // src/constants/sampleData.ts
-import { Task } from '../types';
+import { FrontendTask } from '../types';
 
-export const SAMPLE_TASKS: Task[] = [
+export const SAMPLE_TASKS: FrontendTask[] = [
   { 
-    id: 1, 
-    text: "Welcome to the demo!", 
-    completed: true, 
+    id: "1", 
+    text: "Complete project proposal", 
+    completed: false, 
     priority: "high",
-    createdAt: new Date('2024-01-01T10:00:00Z'),
-    category: "Demo"
+    createdAt: new Date('2024-01-15T14:30:00Z'),
+    category: "WORK",
+    tags: ["urgent", "client"],
+    dueDate: new Date('2024-01-20T17:00:00Z'),
+    description: "Finalize quarterly project proposal with budget estimates and timeline."
   },
   { 
-    id: 2, 
-    text: "Try adding a new task", 
+    id: "2", 
+    text: "Plan weekend trip", 
     completed: false, 
     priority: "medium",
-    createdAt: new Date('2024-01-01T11:00:00Z'),
-    category: "Demo"
+    createdAt: new Date('2024-01-14T09:15:00Z'),
+    category: "PERSONAL",
+    tags: ["travel", "fun"],
+    dueDate: new Date('2024-01-25T12:00:00Z'),
+    description: "Research destinations, book accommodations, and create itinerary for weekend getaway."
   },
   { 
-    id: 3, 
-    text: "Toggle dark mode", 
+    id: "3", 
+    text: "Buy groceries", 
     completed: false, 
     priority: "low",
-    createdAt: new Date('2024-01-01T12:00:00Z'),
-    category: "UI"
+    createdAt: new Date('2024-01-16T11:45:00Z'),
+    category: "SHOPPING",
+    tags: ["weekly", "routine"],
+    dueDate: new Date('2024-01-18T18:00:00Z'),
+    description: "Weekly grocery shopping including fresh produce, dairy, and household essentials."
   },
   { 
-    id: 4, 
-    text: "Drag tasks to reorder", 
+    id: "4", 
+    text: "Schedule doctor appointment", 
+    completed: true, 
+    priority: "medium",
+    createdAt: new Date('2024-01-10T15:20:00Z'),
+    category: "HEALTH",
+    tags: ["health", "annual"],
+    description: "Annual checkup and routine blood work with primary care physician."
+  },
+  { 
+    id: "5", 
+    text: "Review quarterly reports", 
     completed: false, 
     priority: "high",
-    createdAt: new Date('2024-01-01T13:00:00Z'),
-    category: "Demo"
-  },
-  { 
-    id: 5, 
-    text: "Mark tasks as complete", 
-    completed: false, 
-    priority: "medium",
-    createdAt: new Date('2024-01-01T14:00:00Z'),
-    category: "Demo"
+    createdAt: new Date('2024-01-12T08:30:00Z'),
+    category: "WORK",
+    tags: ["review", "quarterly"],
+    dueDate: new Date('2024-01-22T17:00:00Z'),
+    description: "Analyze Q4 performance metrics and prepare summary for leadership team."
   }
 ];
 

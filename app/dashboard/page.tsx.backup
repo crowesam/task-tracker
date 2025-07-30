@@ -1,17 +1,17 @@
-// app/dashboard/page.tsx - CORRECTED VERSION
+// app/dashboard/page.tsx
 'use client'
 
 import React, { useState, useEffect } from 'react';
 import { useUser } from '@stackframe/stack';
 import { useRouter } from 'next/navigation';
 import { Header } from '@/src/components/layout/Header';
+import { TaskList } from '@/src/components/features/TaskList';
+import { TaskForm } from '@/src/components/features/TaskForm';
+import { FilterBar } from '@/src/components/features/FilterBar';
 import { FrontendTask } from '@/src/types';
+import { FilterState } from '@/src/types/filters';
 import { combineClasses } from '@/src/utils';
-import { Sparkles, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
-import TaskGrid from '@/src/components/ui/TaskGrid';
-import TaskModal from '@/src/components/ui/TaskModal';
-import TaskForm from '@/src/components/ui/TaskForm';
-import AddTaskButton from '@/src/components/ui/AddTaskButton';
+import { Sparkles, CheckCircle, Clock, AlertTriangle, Plus } from 'lucide-react';
 
 export default function Dashboard() {
   const user = useUser();
@@ -20,11 +20,13 @@ export default function Dashboard() {
   // State
   const [tasks, setTasks] = useState<FrontendTask[]>([]);
   const [darkMode, setDarkMode] = useState(false);
-  
-  // 👈 MODAL STATE
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editingTask, setEditingTask] = useState<FrontendTask | null>(null);
+  const [showForm, setShowForm] = useState(false);
+  const [filters, setFilters] = useState<FilterState>({
+    selectedCategory: undefined,
+    selectedTags: [],
+    searchQuery: '',
+    showCompleted: true,
+  });
 
   // Load theme preference
   useEffect(() => {
@@ -46,12 +48,13 @@ export default function Dashboard() {
     }
   }, [user, router]);
 
-  // Load tasks from localStorage
+  // Load tasks from localStorage (temporary - replace with API later)
   useEffect(() => {
     if (user) {
       const savedTasks = localStorage.getItem(`tasks_${user.id}`);
       if (savedTasks) {
         const parsedTasks = JSON.parse(savedTasks);
+        // Convert date strings back to Date objects
         const tasksWithDates = parsedTasks.map((task: FrontendTask & { createdAt: string; updatedAt?: string; dueDate?: string }) => ({
           ...task,
           createdAt: new Date(task.createdAt),
@@ -75,7 +78,12 @@ export default function Dashboard() {
     }
   }, [tasks, user]);
 
-  // 👈 EXISTING TASK OPERATIONS
+  // Task operations
+  const handleAddTask = (newTask: FrontendTask) => {
+    setTasks([...tasks, newTask]);
+    setShowForm(false);
+  };
+
   const handleToggleTask = (id: string) => {
     setTasks(tasks.map(task => 
       task.id === id ? { ...task, completed: !task.completed } : task
@@ -86,45 +94,29 @@ export default function Dashboard() {
     setTasks(tasks.filter(task => task.id !== id));
   };
 
-  // 👈 NEW MODAL FUNCTIONS
-  const handleCreateTask = (taskData: Omit<FrontendTask, 'id' | 'createdAt'>) => {
-    const newTask: FrontendTask = {
-      ...taskData,
-      id: Date.now().toString(),
-      createdAt: new Date(),
-    };
-    setTasks([...tasks, newTask]);
-    setIsCreateModalOpen(false);
+  const handleUpdateDueDate = (id: string, dueDate: Date | null) => {
+    setTasks(tasks.map(task => 
+      task.id === id ? { ...task, dueDate: dueDate || undefined } : task
+    ));
   };
 
-  const handleEditTask = (id: string) => {
-    const task = tasks.find(t => t.id === id);
-    if (task) {
-      setEditingTask(task);
-      setIsEditModalOpen(true);
-    }
-  };
-
-  const handleUpdateTask = (taskData: Omit<FrontendTask, 'id' | 'createdAt'>) => {
-    if (editingTask) {
-      setTasks(tasks.map(task => 
-        task.id === editingTask.id 
-          ? { ...taskData, id: editingTask.id, createdAt: editingTask.createdAt }
-          : task
-      ));
-      setIsEditModalOpen(false);
-      setEditingTask(null);
+  const playSound = (type: string) => {
+    try {
+      const audio = new Audio(`/sounds/${type}.mp3`);
+      audio.volume = 0.3;
+      audio.play().catch(() => console.log(`Playing ${type} sound`));
+    } catch {
+      console.log(`Playing ${type} sound`);
     }
   };
 
   if (!user) {
     return (
-      <div className={combineClasses(
-        'min-h-screen transition-all duration-500 flex items-center justify-center',
+      <div className={`min-h-screen transition-all duration-500 ${
         darkMode 
           ? 'bg-gradient-to-br from-slate-900 via-teal-900 to-slate-900' 
-          : 'bg-gradient-to-br from-yellow-400 via-green-400 via-teal-500 to-purple-600'
-      )}>
+          : 'bg-gradient-to-br from-teal-800 via-teal-700 to-teal-900'
+      } flex items-center justify-center`}>
         <div className="text-white text-xl">Loading...</div>
       </div>
     );
@@ -139,7 +131,7 @@ export default function Dashboard() {
       'min-h-screen transition-all duration-500',
       darkMode 
         ? 'bg-gradient-to-br from-slate-900 via-teal-900 to-slate-900' 
-        : 'bg-gradient-to-br from-yellow-400 via-green-400 via-teal-500 to-purple-600'
+        : 'bg-gradient-to-br from-teal-800 via-teal-700 to-teal-900'
     )}>
       {/* Header Navigation */}
       <nav className="relative z-10 p-6">
@@ -165,7 +157,10 @@ export default function Dashboard() {
               showThemeToggle={true}
               actions={
                 <button
-                  onClick={() => router.push('/sign-out')}
+                  onClick={() => {
+                    playSound('click');
+                    router.push('/sign-out');
+                  }}
                   className={`px-4 py-2 rounded-full backdrop-blur-md transition-all duration-300 hover:scale-105 ${
                     darkMode 
                       ? 'bg-white/10 text-white hover:bg-white/20 border border-white/20' 
@@ -184,17 +179,30 @@ export default function Dashboard() {
       <div className="relative z-10 max-w-7xl mx-auto px-6 pt-8 pb-12">
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            Your tasks
+            Welcome back,
+            <span className="block bg-gradient-to-r from-orange-400 to-orange-500 bg-clip-text text-transparent">
+              {user.displayName || user.primaryEmail?.split('@')[0] || 'User'}
+            </span>
           </h2>
           <p className="text-xl text-white/80 max-w-2xl mx-auto">
-            Beautiful glassmorphism task cards with priority indicators
+            Stay organized and productive with your beautiful task management dashboard
           </p>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-          {/* Total Tasks */}
-          <div className="p-6 rounded-2xl backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
+          <div
+            className={`p-6 rounded-2xl backdrop-blur-md border transition-all duration-300 hover:scale-105 ${
+              darkMode 
+                ? 'bg-white/10 border-white/20 hover:bg-white/15' 
+                : 'bg-white/20 border-white/30 hover:bg-white/30'
+            }`}
+            style={{
+              background: darkMode 
+                ? 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(20,184,166,0.15) 50%, rgba(255,255,255,0.08) 100%)'
+                : 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(20,184,166,0.2) 50%, rgba(255,255,255,0.25) 100%)'
+            }}
+          >
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center">
                 <CheckCircle className="w-6 h-6 text-white" />
@@ -206,8 +214,18 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Completed */}
-          <div className="p-6 rounded-2xl backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
+          <div
+            className={`p-6 rounded-2xl backdrop-blur-md border transition-all duration-300 hover:scale-105 ${
+              darkMode 
+                ? 'bg-white/10 border-white/20 hover:bg-white/15' 
+                : 'bg-white/20 border-white/30 hover:bg-white/30'
+            }`}
+            style={{
+              background: darkMode 
+                ? 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(34,197,94,0.15) 50%, rgba(255,255,255,0.08) 100%)'
+                : 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(34,197,94,0.2) 50%, rgba(255,255,255,0.25) 100%)'
+            }}
+          >
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-full bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center">
                 <CheckCircle className="w-6 h-6 text-white" />
@@ -219,8 +237,18 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* In Progress */}
-          <div className="p-6 rounded-2xl backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
+          <div
+            className={`p-6 rounded-2xl backdrop-blur-md border transition-all duration-300 hover:scale-105 ${
+              darkMode 
+                ? 'bg-white/10 border-white/20 hover:bg-white/15' 
+                : 'bg-white/20 border-white/30 hover:bg-white/30'
+            }`}
+            style={{
+              background: darkMode 
+                ? 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(251,191,36,0.15) 50%, rgba(255,255,255,0.08) 100%)'
+                : 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(251,191,36,0.2) 50%, rgba(255,255,255,0.25) 100%)'
+            }}
+          >
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-full bg-gradient-to-r from-yellow-500 to-yellow-600 flex items-center justify-center">
                 <Clock className="w-6 h-6 text-white" />
@@ -232,8 +260,18 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* High Priority */}
-          <div className="p-6 rounded-2xl backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
+          <div
+            className={`p-6 rounded-2xl backdrop-blur-md border transition-all duration-300 hover:scale-105 ${
+              darkMode 
+                ? 'bg-white/10 border-white/20 hover:bg-white/15' 
+                : 'bg-white/20 border-white/30 hover:bg-white/30'
+            }`}
+            style={{
+              background: darkMode 
+                ? 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(239,68,68,0.15) 50%, rgba(255,255,255,0.08) 100%)'
+                : 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(239,68,68,0.2) 50%, rgba(255,255,255,0.25) 100%)'
+            }}
+          >
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-full bg-gradient-to-r from-red-500 to-red-600 flex items-center justify-center">
                 <AlertTriangle className="w-6 h-6 text-white" />
@@ -246,51 +284,47 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* 👈 ADD TASK BUTTON */}
-        <AddTaskButton 
-          onClick={() => setIsCreateModalOpen(true)}
-          className="mb-12"
-        />
-
-        {/* 👈 UPDATED TASK GRID WITH EDIT HANDLER */}
-        <TaskGrid
-          tasks={tasks}
-          onToggleComplete={handleToggleTask}
-          onDelete={handleDeleteTask}
-          onEdit={handleEditTask}
-        />
-
-        {/* 👈 MODALS */}
-        {/* Create Task Modal */}
-        <TaskModal
-          isOpen={isCreateModalOpen}
-          onClose={() => setIsCreateModalOpen(false)}
-          title="Create New Task"
-        >
-          <TaskForm
-            onSubmit={handleCreateTask}
-            onCancel={() => setIsCreateModalOpen(false)}
-          />
-        </TaskModal>
-
-        {/* Edit Task Modal */}
-        <TaskModal
-          isOpen={isEditModalOpen}
-          onClose={() => {
-            setIsEditModalOpen(false);
-            setEditingTask(null);
-          }}
-          title="Edit Task"
-        >
-          <TaskForm
-            task={editingTask || undefined}
-            onSubmit={handleUpdateTask}
-            onCancel={() => {
-              setIsEditModalOpen(false);
-              setEditingTask(null);
+        {/* Quick Add Button */}
+        <div className="text-center mb-8">
+          <button
+            onClick={() => {
+              playSound('click');
+              setShowForm(!showForm);
             }}
-          />
-        </TaskModal>
+            className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-orange-500 to-orange-600 
+                       text-white rounded-full hover:scale-105 transition-all duration-300 shadow-xl 
+                       hover:shadow-orange-500/25 font-semibold text-lg"
+          >
+            <Plus size={20} />
+            {showForm ? 'Cancel' : 'Add New Task'}
+          </button>
+        </div>
+
+        {/* Task Form */}
+        <TaskForm
+          darkMode={darkMode}
+          onAddTask={handleAddTask}
+          showForm={showForm}
+          onToggleForm={() => setShowForm(!showForm)}
+        />
+
+        {/* Filter Bar */}
+        <FilterBar
+          tasks={tasks}
+          filters={filters}
+          onFiltersChange={setFilters}
+          darkMode={darkMode}
+        />
+
+        {/* Task List */}
+        <TaskList
+          tasks={tasks}
+          darkMode={darkMode}
+          onToggleTask={handleToggleTask}
+          onDeleteTask={handleDeleteTask}
+          onUpdateDueDate={handleUpdateDueDate}
+          filters={filters}
+        />
       </div>
     </div>
   );

@@ -3,9 +3,11 @@ export { Button } from './Button';
 export { Card } from './Card';
 export { Input } from './Input';
 export { Badge } from './Badge';
+export { CategorySelector } from './CategorySelector';
 
 // Re-export default exports as well for flexibility
 export { default as ButtonDefault } from './Button';
 export { default as CardDefault } from './Card';
 export { default as InputDefault } from './Input';
 export { default as BadgeDefault } from './Badge';
+export { default as CategorySelectorDefault } from './CategorySelector';

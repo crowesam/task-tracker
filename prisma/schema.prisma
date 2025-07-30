@@ -25,8 +25,24 @@ model User {
   // Relations
   tasks     Task[]
   sharedTasks TaskShare[]
+  categories Category[]
   
   @@map("users")
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String
+  color     String   @default("#6B7280") // Default gray color
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, name]) // Prevent duplicate category names per user
+  @@map("categories")
 }
 
 model Task {
@@ -36,6 +52,7 @@ model Task {
   completed   Boolean   @default(false)
   priority    Priority  @default(MEDIUM)
   category    String    @default("General") 
+  tags        String[]  @default([])
   dueDate     DateTime?
   order       Int       @default(0)
   createdAt   DateTime  @default(now())

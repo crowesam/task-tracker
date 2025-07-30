@@ -1,7 +1,6 @@
 // src/components/ui/Badge.tsx
 import React from 'react';
 import { combineClasses } from '@/src/utils';
-import { getPriorityBadgeClasses } from '@/src/utils';
 import { PriorityType } from '@/src/types';
 
 interface BadgeProps {
@@ -23,7 +22,21 @@ export const Badge: React.FC<BadgeProps> = ({
   icon,
   'aria-label': ariaLabel,
 }) => {
+  const isPriorityBadge = variant === 'high' || variant === 'medium' || variant === 'low';
+
   const getSizeClasses = (): string => {
+    if (isPriorityBadge) {
+      // Priority badges are circular dots
+      switch (size) {
+        case 'sm':
+          return 'w-6 h-6';
+        case 'lg':
+          return 'w-8 h-8';
+        default: // md
+          return 'w-7 h-7';
+      }
+    }
+    
     switch (size) {
       case 'sm':
         return 'px-2 py-1 text-xs';
@@ -34,10 +47,24 @@ export const Badge: React.FC<BadgeProps> = ({
     }
   };
 
+  const getPriorityDotClasses = (): string => {
+    const baseClasses = 'rounded-full border-2 border-white shadow-sm';
+    switch (variant) {
+      case 'high':
+        return `${baseClasses} bg-red-500`;
+      case 'medium':
+        return `${baseClasses} bg-blue-500`;
+      case 'low':
+        return `${baseClasses} bg-green-500`;
+      default:
+        return baseClasses;
+    }
+  };
+
   const getVariantClasses = (): string => {
-    // Handle priority variants
-    if (variant === 'high' || variant === 'medium' || variant === 'low') {
-      return getPriorityBadgeClasses(variant);
+    // Handle priority variants with dots
+    if (isPriorityBadge) {
+      return getPriorityDotClasses();
     }
 
     // Handle other variants
@@ -57,7 +84,9 @@ export const Badge: React.FC<BadgeProps> = ({
 
   const badgeClasses = combineClasses(
     // Base styles
-    'inline-flex items-center gap-1 rounded-full font-medium',
+    isPriorityBadge 
+      ? 'inline-flex items-center justify-center flex-shrink-0' 
+      : 'inline-flex items-center gap-1 rounded-full font-medium',
     // Size classes
     getSizeClasses(),
     // Variant classes
@@ -66,6 +95,18 @@ export const Badge: React.FC<BadgeProps> = ({
     className
   );
 
+  // For priority badges, render just the dot
+  if (isPriorityBadge) {
+    return (
+      <div 
+        className={badgeClasses} 
+        aria-label={ariaLabel || `Priority: ${variant}`}
+        title={`Priority: ${variant}`}
+      />
+    );
+  }
+
+  // For other badges, render with content
   return (
     <div className={badgeClasses} aria-label={ariaLabel}>
       {icon && (

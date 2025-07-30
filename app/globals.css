@@ -21,6 +21,16 @@ html {
     @apply backdrop-blur-md bg-white/5 border border-white/10;
   }
   
+  .glassmorphism {
+    @apply backdrop-blur-md bg-white/10 border border-white/20;
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+  }
+
+  .task-card {
+    min-height: 240px;
+  }
+  
   .shadow-glow {
     box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
   }
@@ -122,4 +132,48 @@ button, input, textarea, select {
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
+}
+/* ===== GLASSMORPHISM TASK CARDS STYLES ===== */
+
+/* Glassmorphism utilities */
+.glassmorphism {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.glassmorphism-card {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Smooth transitions for task cards */
+.task-card * {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Focus states for accessibility */
+.task-card button:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.8);
+  outline-offset: 2px;
+}
+
+/* Checkbox animation */
+@keyframes checkmark {
+  0% { transform: scale(0) rotate(45deg); opacity: 0; }
+  50% { transform: scale(1.2) rotate(45deg); opacity: 0.8; }
+  100% { transform: scale(1) rotate(45deg); opacity: 1; }
+}
+
+.checkmark-animation {
+  animation: checkmark 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Hover glow effects */
+.hover-glow:hover {
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2), 
+              0 0 40px rgba(255, 255, 255, 0.1),
+              0 8px 32px rgba(0, 0, 0, 0.1);
 }
