@@ -235,7 +235,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
         error={errors.title}
         fieldName="title"
         maxLength={100}
-        required
+        // required
       />
 
       {/* Task Description */}
