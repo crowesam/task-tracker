@@ -1,6 +1,6 @@
  'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Calendar, FileText, Type } from 'lucide-react';
 import PrioritySelector from './PrioritySelector';
 import TagInput from './TagInput';
@@ -104,7 +104,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
     onChange: (value: string) => void;
     placeholder?: string;
     type?: string;
-    icon?: any;
+    icon?: React.ComponentType<{ className?: string }>;
     error?: string;
     fieldName: string;
     maxLength?: number;
