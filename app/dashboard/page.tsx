@@ -10,9 +10,105 @@ import { FrontendTask } from '@/src/types';
 import { combineClasses } from '@/src/utils';
 import { Sparkles, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
 import TaskGrid from '@/src/components/ui/TaskGrid';
-import TaskModal from '@/src/components/ui/TaskModal';
 import TaskForm from '@/src/components/ui/TaskForm';
 import AddTaskButton from '@/src/components/ui/AddTaskButton';
+
+// Import the portal-based TaskModal
+import { createPortal } from 'react-dom';
+import { X } from 'lucide-react';
+
+// Portal-based TaskModal component
+interface TaskModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  title: string;
+  children: React.ReactNode;
+}
+
+const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, title, children }) => {
+  console.log('TaskModal render - isOpen:', isOpen, 'title:', title);
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        console.log('Escape key pressed, closing modal');
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      console.log('Modal is open, adding event listeners');
+      document.addEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'hidden';
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen, onClose]);
+
+  if (!isOpen) {
+    console.log('Modal is closed, returning null');
+    return null;
+  }
+
+  console.log('Modal is open, rendering with portal');
+
+  const ModalContent = () => (
+    <div 
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+    >
+      <div 
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-all duration-300"
+        onClick={onClose}
+        aria-hidden="true"
+      />
+      
+      <div 
+        className="relative w-full max-w-lg mx-auto max-h-[90vh] overflow-hidden rounded-2xl
+                   backdrop-blur-md bg-white/20 border border-white/30
+                   shadow-2xl transform transition-all duration-500 ease-out"
+        style={{
+          background: 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.10) 100%)',
+          backdropFilter: 'blur(20px)',
+          boxShadow: '0 25px 50px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.2), inset 0 1px 0 rgba(255,255,255,0.3)'
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between p-6 pb-4 border-b border-white/20">
+          <h2 id="modal-title" className="text-2xl font-bold text-white">
+            {title}
+          </h2>
+          
+          <button
+            onClick={onClose}
+            className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 
+                       flex items-center justify-center transition-all duration-300 
+                       hover:scale-110 border border-white/30 hover:border-white/50
+                       focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-transparent"
+            aria-label="Close modal"
+            type="button"
+          >
+            <X className="w-5 h-5 text-white" />
+          </button>
+        </div>
+
+        <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+
+  return typeof window !== 'undefined' 
+    ? createPortal(<ModalContent />, document.body)
+    : null;
+};
+
 
 export default function Dashboard() {
   const user = useUser();
@@ -118,6 +214,7 @@ export default function Dashboard() {
     }
   };
 
+  // Loading state
   if (!user) {
     return (
       <div className={combineClasses(
@@ -142,294 +239,198 @@ export default function Dashboard() {
         ? 'bg-gradient-to-br from-slate-900 via-teal-900 to-slate-900' 
         : 'bg-gradient-to-br from-yellow-400 via-green-400 via-teal-500 to-purple-600'
     )}> 
-      {/* Background Effects */}
-       <BackgroundEffects darkMode={darkMode} variant="enhanced" animated={true} />
-      {/* Header Navigation */}
-      <nav className="relative z-10 p-6">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center">
-              <Sparkles className="w-6 h-6 text-white" />
+        {/* Background Effects */}
+        <BackgroundEffects darkMode={darkMode} variant="enhanced" animated={true} />
+        
+        {/* Header Navigation */}
+        <nav className="relative z-10 p-6">
+          <div className="max-w-7xl mx-auto flex justify-between items-center">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center">
+                <Sparkles className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-orange-400 to-orange-500 bg-clip-text text-transparent">
+                  Medilios
+                </h1>
+                <p className="text-white/70 text-sm">Task Dashboard</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-orange-400 to-orange-500 bg-clip-text text-transparent">
-                Medilios
-              </h1>
-              <p className="text-white/70 text-sm">Task Dashboard</p>
+
+            <div className="flex items-center gap-4">
+              <Header
+                title=""
+                subtitle=""
+                darkMode={darkMode}
+                onToggleTheme={() => setDarkMode(!darkMode)}
+                showThemeToggle={true}
+                actions={
+                  <button
+                    onClick={() => router.push('/sign-out')}
+                    className={`px-4 py-2 rounded-full backdrop-blur-md transition-all duration-300 hover:scale-105 ${
+                      darkMode 
+                        ? 'bg-white/10 text-white hover:bg-white/20 border border-white/20' 
+                        : 'bg-white/20 text-white hover:bg-white/30 border border-white/30'
+                    }`}
+                  >
+                    Sign Out
+                  </button>
+                }
+              />
+            </div>
+          </div>
+        </nav>
+
+        {/* Welcome Section */}
+        <div className="relative z-10 max-w-7xl mx-auto px-6 pt-8 pb-12">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+              Your tasks
+            </h2>
+            <p className="text-xl text-white/80 max-w-2xl mx-auto">
+              Beautiful glassmorphism task cards with priority indicators
+            </p>
+          </div>
+
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+            {/* Total Tasks */}
+            <div className="p-6 rounded-2xl backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center">
+                  <CheckCircle className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-3xl font-bold text-white">{tasks.length}</h3>
+                  <p className="text-white/70 font-medium">Total Tasks</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Completed */}
+            <div className="p-6 rounded-2xl backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center">
+                  <CheckCircle className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-3xl font-bold text-white">{completedTasks}</h3>
+                  <p className="text-white/70 font-medium">Completed</p>
+                </div>
+              </div>
+            </div>
+
+            {/* In Progress */}
+            <div className="p-6 rounded-2xl backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-yellow-500 to-yellow-600 flex items-center justify-center">
+                  <Clock className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-3xl font-bold text-white">{inProgressTasks}</h3>
+                  <p className="text-white/70 font-medium">In Progress</p>
+                </div>
+              </div>
+            </div>
+
+            {/* High Priority */}
+            <div className="p-6 rounded-2xl backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-red-500 to-red-600 flex items-center justify-center">
+                  <AlertTriangle className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-3xl font-bold text-white">{highPriorityTasks}</h3>
+                  <p className="text-white/70 font-medium">High Priority</p>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            <Header
-              title=""
-              subtitle=""
-              darkMode={darkMode}
-              onToggleTheme={() => setDarkMode(!darkMode)}
-              showThemeToggle={true}
-              actions={
-                <button
-                  onClick={() => router.push('/sign-out')}
-                  className={`px-4 py-2 rounded-full backdrop-blur-md transition-all duration-300 hover:scale-105 ${
-                    darkMode 
-                      ? 'bg-white/10 text-white hover:bg-white/20 border border-white/20' 
-                      : 'bg-white/20 text-white hover:bg-white/30 border border-white/30'
-                  }`}
-                >
-                  Sign Out
-                </button>
-              }
-            />
-          </div>
-        </div>
-      </nav>
- 'use client';
-
-import React, { useEffect } from 'react';
-import { X } from 'lucide-react';
-
-interface TaskModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  title: string;
-  children: React.ReactNode;
-}
-
-const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, title, children }) => {
-  console.log('TaskModal render - isOpen:', isOpen, 'title:', title);
-
-  // Handle escape key
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        console.log('Escape key pressed, closing modal');
-        onClose();
-      }
-    };
-
-    if (isOpen) {
-      console.log('Modal is open, adding event listeners');
-      document.addEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'hidden';
-    }
-
-    return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
-    };
-  }, [isOpen, onClose]);
-
-  // Don't render if closed
-  if (!isOpen) {
-    console.log('Modal is closed, returning null');
-    return null;
-  }
-
-  console.log('Modal is open, rendering content');
-
-  // Simple modal without portal for now
-  return (
-    <div 
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0,0,0,0.7)',
-        zIndex: 999999,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '20px'
-      }}
-      onClick={onClose}
-    >
-      <div 
-        style={{
-          backgroundColor: 'rgba(255,255,255,0.95)',
-          backdropFilter: 'blur(20px)',
-          borderRadius: '16px',
-          padding: '0',
-          maxWidth: '500px',
-          width: '100%',
-          maxHeight: '90vh',
-          overflow: 'hidden',
-          border: '1px solid rgba(255,255,255,0.3)',
-          boxShadow: '0 25px 50px rgba(0,0,0,0.3)'
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '24px',
-          borderBottom: '1px solid rgba(0,0,0,0.1)'
-        }}>
-          <h2 style={{
-            margin: 0,
-            fontSize: '24px',
-            fontWeight: 'bold',
-            color: '#333'
-          }}>
-            {title}
-          </h2>
-          
+          {/* TEST MODAL BUTTON - Remove after debugging */}
           <button
-            onClick={onClose}
+            onClick={() => {
+              console.log('Test modal button clicked');
+              alert('Test button works! Check console for modal state logs.');
+            }}
             style={{
-              background: 'rgba(0,0,0,0.1)',
+              position: 'fixed',
+              top: '10px',
+              right: '10px',
+              zIndex: 99999,
+              background: 'red',
+              color: 'white',
+              padding: '10px 20px',
               border: 'none',
-              borderRadius: '50%',
-              width: '40px',
-              height: '40px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              borderRadius: '5px',
               cursor: 'pointer',
-              transition: 'all 0.2s'
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.background = 'rgba(0,0,0,0.2)';
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.background = 'rgba(0,0,0,0.1)';
+              fontWeight: 'bold'
             }}
           >
-            <X size={20} color="#333" />
+            DEBUG TEST
           </button>
-        </div>
 
-        {/* Content */}
-        <div style={{
-          padding: '24px',
-          maxHeight: 'calc(90vh - 120px)',
-          overflowY: 'auto'
-        }}>
-          {children}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default TaskModal;
-
-
-
-      {/* Welcome Section */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 pt-8 pb-12">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            Your tasks
-          </h2>
-          <p className="text-xl text-white/80 max-w-2xl mx-auto">
-            Beautiful glassmorphism task cards with priority indicators
-          </p>
-        </div>
-
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-          {/* Total Tasks */}
-          <div className="p-6 rounded-2xl backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center">
-                <CheckCircle className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h3 className="text-3xl font-bold text-white">{tasks.length}</h3>
-                <p className="text-white/70 font-medium">Total Tasks</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Completed */}
-          <div className="p-6 rounded-2xl backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center">
-                <CheckCircle className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h3 className="text-3xl font-bold text-white">{completedTasks}</h3>
-                <p className="text-white/70 font-medium">Completed</p>
-              </div>
-            </div>
-          </div>
-
-          {/* In Progress */}
-          <div className="p-6 rounded-2xl backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-yellow-500 to-yellow-600 flex items-center justify-center">
-                <Clock className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h3 className="text-3xl font-bold text-white">{inProgressTasks}</h3>
-                <p className="text-white/70 font-medium">In Progress</p>
-              </div>
-            </div>
-          </div>
-
-          {/* High Priority */}
-          <div className="p-6 rounded-2xl backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-red-500 to-red-600 flex items-center justify-center">
-                <AlertTriangle className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h3 className="text-3xl font-bold text-white">{highPriorityTasks}</h3>
-                <p className="text-white/70 font-medium">High Priority</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* 👈 ADD TASK BUTTON */}
-        <AddTaskButton 
-          onClick={() => setIsCreateModalOpen(true)}
-          className="mb-12"
-        />
-
-        {/* 👈 UPDATED TASK GRID WITH EDIT HANDLER */}
-        <TaskGrid
-          tasks={tasks}
-          onToggleComplete={handleToggleTask}
-          onDelete={handleDeleteTask}
-          onEdit={handleEditTask}
-        />
-
-        {/* 👈 MODALS */}
-        {/* Create Task Modal */}
-        <TaskModal
-          isOpen={isCreateModalOpen}
-          onClose={() => setIsCreateModalOpen(false)}
-          title="Create New Task"
-        >
-          <TaskForm
-            onSubmit={handleCreateTask}
-            onCancel={() => setIsCreateModalOpen(false)}
+          {/* 👈 ADD TASK BUTTON */}
+          <AddTaskButton 
+            onClick={() => {
+              console.log('AddTaskButton clicked - opening create modal');
+              console.log('Current isCreateModalOpen state:', isCreateModalOpen);
+              setIsCreateModalOpen(true);
+              console.log('isCreateModalOpen set to true');
+            }}
+            className="mb-12"
           />
-        </TaskModal>
 
-        {/* Edit Task Modal */}
-        <TaskModal
-          isOpen={isEditModalOpen}
-          onClose={() => {
-            setIsEditModalOpen(false);
-            setEditingTask(null);
-          }}
-          title="Edit Task"
-        >
-          <TaskForm
-            task={editingTask || undefined}
-            onSubmit={handleUpdateTask}
-            onCancel={() => {
+          {/* 👈 UPDATED TASK GRID WITH EDIT HANDLER */}
+          <TaskGrid
+            tasks={tasks}
+            onToggleComplete={handleToggleTask}
+            onDelete={handleDeleteTask}
+            onEdit={handleEditTask}
+          />
+
+          {/* 👈 MODALS */}
+          {/* Rendering modals - Create: {isCreateModalOpen}, Edit: {isEditModalOpen} */}
+          
+          {/* Create Task Modal */}
+          <TaskModal
+            isOpen={isCreateModalOpen}
+            onClose={() => {
+              console.log('Create modal onClose called');
+              setIsCreateModalOpen(false);
+            }}
+            title="Create New Task"
+          >
+            <TaskForm
+              onSubmit={handleCreateTask}
+              onCancel={() => {
+                console.log('Create form onCancel called');
+                setIsCreateModalOpen(false);
+              }}
+            />
+          </TaskModal>
+
+          {/* Edit Task Modal */}
+          <TaskModal
+            isOpen={isEditModalOpen}
+            onClose={() => {
+              console.log('Edit modal onClose called');
               setIsEditModalOpen(false);
               setEditingTask(null);
             }}
-          />
-        </TaskModal>
+            title="Edit Task"
+          >
+            <TaskForm
+              task={editingTask || undefined}
+              onSubmit={handleUpdateTask}
+              onCancel={() => {
+                console.log('Edit form onCancel called');
+                setIsEditModalOpen(false);
+                setEditingTask(null);
+              }}
+            />
+          </TaskModal>
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
