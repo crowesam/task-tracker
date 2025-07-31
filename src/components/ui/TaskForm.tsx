@@ -86,7 +86,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
     onSubmit(taskData);
   };
 
-  // Enhanced input component - FIXED typing and removed confusing icon
+  // Enhanced input component - SIMPLIFIED without local state
   const FormInput = ({ 
     label, 
     value, 
@@ -108,80 +108,65 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
     error?: string;
     fieldName: string;
     maxLength?: number;
-  }) => {
-    // LOCAL state to fix typing issues
-    const [localValue, setLocalValue] = React.useState(value);
-    
-    React.useEffect(() => {
-      setLocalValue(value);
-    }, [value]);
-
-    const handleChange = (newValue: string) => {
-      setLocalValue(newValue);
-      onChange(newValue);
-    };
-
-    return (
-      <div className="space-y-3 mb-6"> {/* Better spacing */}
-        <label className="block text-black font-semibold text-sm tracking-wide uppercase">
-          {label}
-          {maxLength && (
-            <span className="text-gray-500 text-xs ml-2 normal-case">
-              ({localValue.length}/{maxLength})
-            </span>
-          )}
-        </label>
-        
-        <div 
-          className={`
-            relative flex items-center border-2 transition-all duration-300
-            ${focusedField === fieldName
-              ? 'border-orange-500 shadow-lg shadow-orange-500/20 scale-[1.01]' 
-              : error 
-                ? 'border-red-500'
-                : 'border-gray-300 hover:border-gray-400'
-            }
-          `}
-          style={{ 
-            borderRadius: '12px',
-            background: 'rgba(255, 255, 255, 0.7)', // Consistent translucency
-            backdropFilter: 'blur(8px)'
-          }}
-        >
-          {/* Remove Type icon for regular inputs - only show meaningful icons */}
-          {Icon && fieldName !== 'title' && (
-            <Icon className="w-5 h-5 text-gray-400 ml-4 flex-shrink-0" />
-          )}
-          
-          <input
-            type={type}
-            value={localValue}
-            onChange={(e) => handleChange(e.target.value)}
-            onFocus={() => setFocusedField(fieldName)}
-            onBlur={() => setFocusedField(null)}
-            placeholder={placeholder}
-            maxLength={maxLength}
-            className={`
-              flex-1 px-4 py-3 bg-transparent text-gray-700 placeholder-gray-400
-              focus:outline-none text-sm font-medium
-              ${Icon && fieldName !== 'title' ? 'pl-2' : ''}
-            `}
-            style={{ borderRadius: '12px' }}
-            {...props}
-          />
-        </div>
-        
-        {error && (
-          <p className="text-red-500 text-xs mt-2 flex items-center gap-1">
-            <span className="w-1 h-1 bg-red-500 rounded-full"></span>
-            {error}
-          </p>
+  }) => (
+    <div className="space-y-3 mb-6">
+      <label className="block text-black font-semibold text-sm tracking-wide uppercase">
+        {label}
+        {maxLength && (
+          <span className="text-gray-500 text-xs ml-2 normal-case">
+            ({value.length}/{maxLength})
+          </span>
         )}
+      </label>
+      
+      <div 
+        className={`
+          relative flex items-center border-2 transition-all duration-300
+          ${focusedField === fieldName
+            ? 'border-orange-500 shadow-lg shadow-orange-500/20 scale-[1.01]' 
+            : error 
+              ? 'border-red-500'
+              : 'border-gray-300 hover:border-gray-400'
+          }
+        `}
+        style={{ 
+          borderRadius: '12px',
+          background: 'rgba(255, 255, 255, 0.7)',
+          backdropFilter: 'blur(8px)'
+        }}
+      >
+        {Icon && fieldName !== 'title' && (
+          <Icon className="w-5 h-5 text-gray-400 ml-4 flex-shrink-0" />
+        )}
+        
+        <input
+          type={type}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          onFocus={() => setFocusedField(fieldName)}
+          onBlur={() => setFocusedField(null)}
+          placeholder={placeholder}
+          maxLength={maxLength}
+          className={`
+            flex-1 px-4 py-3 bg-transparent text-gray-700 placeholder-gray-400
+            focus:outline-none text-sm font-medium
+            ${Icon && fieldName !== 'title' ? 'pl-2' : ''}
+          `}
+          style={{ borderRadius: '12px' }}
+          {...props}
+        />
       </div>
-    );
-  };
+      
+      {error && (
+        <p className="text-red-500 text-xs mt-2 flex items-center gap-1">
+          <span className="w-1 h-1 bg-red-500 rounded-full"></span>
+          {error}
+        </p>
+      )}
+    </div>
+  );
 
-  // Enhanced textarea component with better spacing
+  // Enhanced textarea component - SIMPLIFIED without local state
   const FormTextarea = ({ 
     label, 
     value, 
@@ -200,69 +185,55 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
     fieldName: string;
     maxLength?: number;
     rows?: number;
-  }) => {
-    // LOCAL state to fix typing issues
-    const [localValue, setLocalValue] = React.useState(value);
-    
-    React.useEffect(() => {
-      setLocalValue(value);
-    }, [value]);
-
-    const handleChange = (newValue: string) => {
-      setLocalValue(newValue);
-      onChange(newValue);
-    };
-
-    return (
-      <div className="space-y-3 mb-6"> {/* Better spacing */}
-        <label className="block text-black font-semibold text-sm tracking-wide uppercase">
-          {label}
-          {maxLength && (
-            <span className="text-gray-500 text-xs ml-2 normal-case">
-              ({localValue.length}/{maxLength})
-            </span>
-          )}
-        </label>
-        
-        <div 
-          className={`
-            relative border-2 transition-all duration-300
-            ${focusedField === fieldName
-              ? 'border-orange-500 shadow-lg shadow-orange-500/20 scale-[1.01]' 
-              : error 
-                ? 'border-red-500'
-                : 'border-gray-300 hover:border-gray-400'
-            }
-          `}
-          style={{ 
-            borderRadius: '12px',
-            background: 'rgba(255, 255, 255, 0.7)', // Consistent translucency
-            backdropFilter: 'blur(8px)'
-          }}
-        >
-          <textarea
-            value={localValue}
-            onChange={(e) => handleChange(e.target.value)}
-            onFocus={() => setFocusedField(fieldName)}
-            onBlur={() => setFocusedField(null)}
-            placeholder={placeholder}
-            maxLength={maxLength}
-            rows={rows}
-            className="w-full px-4 py-3 bg-transparent text-gray-700 placeholder-gray-400
-                       focus:outline-none text-sm font-medium resize-none"
-            style={{ borderRadius: '12px' }}
-          />
-        </div>
-        
-        {error && (
-          <p className="text-red-500 text-xs mt-2 flex items-center gap-1">
-            <span className="w-1 h-1 bg-red-500 rounded-full"></span>
-            {error}
-          </p>
+  }) => (
+    <div className="space-y-3 mb-6">
+      <label className="block text-black font-semibold text-sm tracking-wide uppercase">
+        {label}
+        {maxLength && (
+          <span className="text-gray-500 text-xs ml-2 normal-case">
+            ({value.length}/{maxLength})
+          </span>
         )}
+      </label>
+      
+      <div 
+        className={`
+          relative border-2 transition-all duration-300
+          ${focusedField === fieldName
+            ? 'border-orange-500 shadow-lg shadow-orange-500/20 scale-[1.01]' 
+            : error 
+              ? 'border-red-500'
+              : 'border-gray-300 hover:border-gray-400'
+          }
+        `}
+        style={{ 
+          borderRadius: '12px',
+          background: 'rgba(255, 255, 255, 0.7)',
+          backdropFilter: 'blur(8px)'
+        }}
+      >
+        <textarea
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          onFocus={() => setFocusedField(fieldName)}
+          onBlur={() => setFocusedField(null)}
+          placeholder={placeholder}
+          maxLength={maxLength}
+          rows={rows}
+          className="w-full px-4 py-3 bg-transparent text-gray-700 placeholder-gray-400
+                     focus:outline-none text-sm font-medium resize-none"
+          style={{ borderRadius: '12px' }}
+        />
       </div>
-    );
-  };
+      
+      {error && (
+        <p className="text-red-500 text-xs mt-2 flex items-center gap-1">
+          <span className="w-1 h-1 bg-red-500 rounded-full"></span>
+          {error}
+        </p>
+      )}
+    </div>
+  );
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
