@@ -12,7 +12,16 @@ export default function SignUpPage() {
           </h1>
           <p className="text-white/70">Create your account to get started</p>
         </div>
-        <SignUp />
+        <SignUp /><br/>
+
+        <div className="text-center mt-6">
+          <p className="text-white/70">
+            Already have an account?{' '}
+            <a href="/sign-in" className="text-orange-400 hover:underline">
+              Sign in
+            </a>
+          </p>
+          
       </div>
            <div className="text-center mt-4">
         <p className="text-white/50 text-xs">
