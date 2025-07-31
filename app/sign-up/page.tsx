@@ -14,6 +14,19 @@ export default function SignUpPage() {
         </div>
         <SignUp />
       </div>
+           <div className="text-center mt-4">
+        <p className="text-white/50 text-xs">
+          By signing in, you agree to our{' '}
+          <a href="/terms-of-service" className="text-orange-400 hover:underline">
+            Terms of Service
+          </a>{' '}
+          and{' '}
+          <a href="/privacy-policy" className="text-orange-400 hover:underline">
+            Privacy Policy
+          </a>.
+        </p>
+         
+      </div>
     </div>
   );
 }
