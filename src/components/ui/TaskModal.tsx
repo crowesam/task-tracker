@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X } from 'lucide-react'; // ← X icon import was missing
+import { X } from 'lucide-react';
 
 interface TaskModalProps {
   isOpen: boolean;
@@ -11,19 +11,21 @@ interface TaskModalProps {
   children: React.ReactNode;
 }
 
-// Remove the unused variable error by using it properly
 const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, title, children }) => {
+  // eslint-disable-next-line no-console
   console.log('TaskModal render - isOpen:', isOpen, 'title:', title);
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
+        // eslint-disable-next-line no-console
         console.log('Escape key pressed, closing modal');
         onClose();
       }
     };
 
     if (isOpen) {
+      // eslint-disable-next-line no-console
       console.log('Modal is open, adding event listeners');
       document.addEventListener('keydown', handleEscape);
       document.body.style.overflow = 'hidden';
@@ -36,90 +38,63 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, title, children 
   }, [isOpen, onClose]);
 
   if (!isOpen) {
+    // eslint-disable-next-line no-console
     console.log('Modal is closed, returning null');
     return null;
   }
 
+  // eslint-disable-next-line no-console
   console.log('Modal is open, rendering with portal');
 
   const ModalContent = () => (
     <div 
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+      className="fixed inset-0 flex items-center justify-center p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title"
+      style={{
+        backgroundColor: 'rgba(255, 0, 0, 0.8)',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 999999,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}
     >
-      {/* SUBTLE BACKDROP - NO OPAQUE OVERLAY */}
-      <div 
-        className="absolute inset-0 backdrop-blur-sm"
-        style={{
-          background: 'rgba(0,0,0,0.2)' // Very subtle dark background
-        }}
-        onClick={onClose}
-        aria-hidden="true"
-      />
-      
-      {/* MODAL CONTAINER - PURE GLASSMORPHISM */}
-      <div 
-        className="relative w-full max-w-lg mx-auto max-h-[90vh] overflow-hidden rounded-2xl
-                   shadow-2xl transform transition-all duration-500 ease-out"
-        style={{
-          // Pure glassmorphism - no solid colors
-          background: 'rgba(255,255,255,0.15)',
-          backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255,255,255,0.2)',
-          boxShadow: '0 25px 50px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.1)'
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* HEADER */}
-        <div 
-          className="flex items-center justify-between p-6 pb-4"
+      <div style={{
+        backgroundColor: 'white',
+        color: 'black', 
+        padding: '20px',
+        borderRadius: '10px',
+        fontSize: '24px',
+        fontWeight: 'bold'
+      }}>
+        🚨 DEBUG: MODAL IS RENDERING! 🚨
+        <br />
+        Title: {title}
+        <br />
+        <button 
+          onClick={onClose}
           style={{
-            borderBottom: '1px solid rgba(255,255,255,0.1)'
+            marginTop: '10px',
+            padding: '10px 20px',
+            backgroundColor: 'blue',
+            color: 'white',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer'
           }}
         >
-          <h2 id="modal-title" className="text-2xl font-bold text-white">
-            {title}
-          </h2>
-          
-          <button
-            onClick={onClose}
-            className="w-10 h-10 rounded-full flex items-center justify-center 
-                       transition-all duration-300 hover:scale-110
-                       focus:outline-none focus:ring-2 focus:ring-white/50"
-            style={{
-              background: 'rgba(255,255,255,0.1)',
-              border: '1px solid rgba(255,255,255,0.2)'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
-            }}
-            aria-label="Close modal"
-            type="button"
-          >
-            <X className="w-5 h-5 text-white" />
-          </button>
-        </div>
-
-        {/* CONTENT AREA - NO BACKGROUND INTERFERENCE */}
-        <div 
-          className="p-6 overflow-y-auto"
-          style={{
-            maxHeight: 'calc(90vh - 120px)',
-            background: 'transparent' // Ensure no background interferes with form
-          }}
-        >
-          {children}
-        </div>
+          Close Modal
+        </button>
       </div>
     </div>
   );
 
-  // PORTAL RENDERING - Now with proper import
   return typeof window !== 'undefined' 
     ? createPortal(<ModalContent />, document.body)
     : null;
