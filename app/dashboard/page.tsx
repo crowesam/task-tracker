@@ -1,6 +1,6 @@
-// app/dashboard/page.tsx - CORRECTED VERSION
+// app/dashboard/page.tsx - LINTER FIXED VERSION
 'use client'
-// Add this import to your dashboard
+
 import { BackgroundEffects } from '@/src/components/layout/BackgroundEffects';
 import React, { useState, useEffect } from 'react';
 import { useUser } from '@stackframe/stack';
@@ -12,20 +12,17 @@ import { Sparkles, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
 import TaskGrid from '@/src/components/ui/TaskGrid';
 import TaskForm from '@/src/components/ui/TaskForm';
 import AddTaskButton from '@/src/components/ui/AddTaskButton';
-// import FiltersButton from '@/src/components/ui/FiltersButton';
-// import CollaborationButton from '@/src/components/ui/CollaborationButton';
-// Import the portal-based TaskModal
+import FiltersButton from '@/src/components/ui/FiltersButton';
+import CollaborationButton from '@/src/components/ui/CollaborationButton';
 import TaskModal from '@/src/components/ui/TaskModal';
  
-export default function Dashboard(){
+export default function Dashboard() { // FIXED: Added space
   const user = useUser();
   const router = useRouter();
   
   // State
   const [tasks, setTasks] = useState<FrontendTask[]>([]);
   const [darkMode, setDarkMode] = useState(false);
-  
-  // 👈 MODAL STATE
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<FrontendTask | null>(null);
@@ -79,7 +76,7 @@ export default function Dashboard(){
     }
   }, [tasks, user]);
 
-  // 👈 EXISTING TASK OPERATIONS
+  // Task operations
   const handleToggleTask = (id: string) => {
     setTasks(tasks.map(task => 
       task.id === id ? { ...task, completed: !task.completed } : task
@@ -90,7 +87,7 @@ export default function Dashboard(){
     setTasks(tasks.filter(task => task.id !== id));
   };
 
-  // 👈 NEW MODAL FUNCTIONS
+  // Modal functions
   const handleCreateTask = (taskData: Omit<FrontendTask, 'id' | 'createdAt'>) => {
     const newTask: FrontendTask = {
       ...taskData,
@@ -146,248 +143,167 @@ export default function Dashboard(){
         ? 'bg-gradient-to-br from-slate-900 via-teal-900 to-slate-900' 
         : 'bg-gradient-to-br from-yellow-400 via-green-400 via-teal-500 to-purple-600'
     )}> 
-        {/* Background Effects */}
-        <BackgroundEffects darkMode={darkMode} variant="enhanced" animated={true} />
-        
-        {/* Header Navigation */}
-        <nav className="relative z-10 p-6">
-          <div className="max-w-7xl mx-auto flex justify-between items-center">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center">
-                <Sparkles className="w-6 h-6 text-white" />
+      {/* Background Effects */}
+      <BackgroundEffects darkMode={darkMode} variant="enhanced" animated={true} />
+      
+      {/* Header Navigation */}
+      <nav className="relative z-10 p-6">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center">
+              <Sparkles className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-orange-400 to-orange-500 bg-clip-text text-transparent">
+                Medilios
+              </h1>
+              <p className="text-white/70 text-sm">Task Dashboard</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <Header
+              title=""
+              subtitle=""
+              darkMode={darkMode}
+              onToggleTheme={() => setDarkMode(!darkMode)}
+              showThemeToggle={true}
+              actions={
+                <button
+                  onClick={() => router.push('/sign-out')}
+                  className={`px-4 py-2 rounded-full backdrop-blur-md transition-all duration-300 hover:scale-105 ${
+                    darkMode 
+                      ? 'bg-white/10 text-white hover:bg-white/20 border border-white/20' 
+                      : 'bg-white/20 text-white hover:bg-white/30 border border-white/30'
+                  }`}
+                >
+                  Sign Out
+                </button>
+              }
+            />
+          </div>
+        </div>
+      </nav>
+
+      {/* Welcome Section */}
+      <div className="relative z-10 max-w-7xl mx-auto px-6 pt-8 pb-12">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            Your tasks
+          </h2>
+          <p className="text-xl text-white/80 max-w-2xl mx-auto">
+            Beautiful glassmorphism task cards with priority indicators
+          </p>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+          <div className="p-6 rounded-2xl backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center">
+                <CheckCircle className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-orange-400 to-orange-500 bg-clip-text text-transparent">
-                  Medilios
-                </h1>
-                <p className="text-white/70 text-sm">Task Dashboard</p>
+                <h3 className="text-3xl font-bold text-white">{tasks.length}</h3>
+                <p className="text-white/70 font-medium">Total Tasks</p>
               </div>
             </div>
+          </div>
 
+          <div className="p-6 rounded-2xl backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
             <div className="flex items-center gap-4">
-              <Header
-                title=""
-                subtitle=""
-                darkMode={darkMode}
-                onToggleTheme={() => setDarkMode(!darkMode)}
-                showThemeToggle={true}
-                actions={
-                  <button
-                    onClick={() => router.push('/sign-out')}
-                    className={`px-4 py-2 rounded-full backdrop-blur-md transition-all duration-300 hover:scale-105 ${
-                      darkMode 
-                        ? 'bg-white/10 text-white hover:bg-white/20 border border-white/20' 
-                        : 'bg-white/20 text-white hover:bg-white/30 border border-white/30'
-                    }`}
-                  >
-                    Sign Out
-                  </button>
-                }
-              />
-            </div>
-          </div>
-        </nav>
-
-        {/* Welcome Section */}
-        <div className="relative z-10 max-w-7xl mx-auto px-6 pt-8 pb-12">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              Your tasks
-            </h2>
-            <p className="text-xl text-white/80 max-w-2xl mx-auto">
-              Beautiful glassmorphism task cards with priority indicators
-            </p>
-          </div>
-
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-            {/* Total Tasks */}
-            <div className="p-6 rounded-2xl backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center">
-                  <CheckCircle className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-3xl font-bold text-white">{tasks.length}</h3>
-                  <p className="text-white/70 font-medium">Total Tasks</p>
-                </div>
+              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center">
+                <CheckCircle className="w-6 h-6 text-white" />
               </div>
-            </div>
-
-            {/* Completed */}
-            <div className="p-6 rounded-2xl backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center">
-                  <CheckCircle className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-3xl font-bold text-white">{completedTasks}</h3>
-                  <p className="text-white/70 font-medium">Completed</p>
-                </div>
-              </div>
-            </div>
-
-            {/* In Progress */}
-            <div className="p-6 rounded-2xl backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-yellow-500 to-yellow-600 flex items-center justify-center">
-                  <Clock className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-3xl font-bold text-white">{inProgressTasks}</h3>
-                  <p className="text-white/70 font-medium">In Progress</p>
-                </div>
-              </div>
-            </div>
-
-            {/* High Priority */}
-            <div className="p-6 rounded-2xl backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-red-500 to-red-600 flex items-center justify-center">
-                  <AlertTriangle className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-3xl font-bold text-white">{highPriorityTasks}</h3>
-                  <p className="text-white/70 font-medium">High Priority</p>
-                </div>
+              <div>
+                <h3 className="text-3xl font-bold text-white">{completedTasks}</h3>
+                <p className="text-white/70 font-medium">Completed</p>
               </div>
             </div>
           </div>
 
-          {/* Action Buttons Row */}
+          <div className="p-6 rounded-2xl backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-yellow-500 to-yellow-600 flex items-center justify-center">
+                <Clock className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-3xl font-bold text-white">{inProgressTasks}</h3>
+                <p className="text-white/70 font-medium">In Progress</p>
+              </div>
+            </div>
+          </div>
 
+          <div className="p-6 rounded-2xl backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-red-500 to-red-600 flex items-center justify-center">
+                <AlertTriangle className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-3xl font-bold text-white">{highPriorityTasks}</h3>
+                <p className="text-white/70 font-medium">High Priority</p>
+              </div>
+            </div>
+          </div>
+        </div>
 
-
-{/* DEBUG ACTION BUTTONS ROW */}
-<div className="flex items-center justify-center gap-6 mb-12">
-  {/* Test Button 1 - Basic */}
-  <button 
-    onClick={() => {
-      // eslint-disable-next-line no-console
-      console.log('TEST BUTTON 1 CLICKED');
-      // eslint-disable-next-line no-alert
-      alert('Test button 1 works!');
-    }}
-    className="px-5 py-3 bg-red-500 text-white rounded-full border-none cursor-pointer hover:bg-red-600"
-  >
-    TEST 1
-  </button>
-
-  {/* Test Button 2 - With State */}
-  <button 
-    onClick={() => {
-      // eslint-disable-next-line no-console
-      console.log('TEST BUTTON 2 CLICKED - Modal state before:', isCreateModalOpen);
-      setIsCreateModalOpen(true);  
-      // eslint-disable-next-line no-console
-      console.log('TEST BUTTON 2 - Modal state after:', isCreateModalOpen);
-    }}
-    className="px-5 py-3 bg-blue-500 text-white rounded-full border-none cursor-pointer hover:bg-blue-600"
-  >
-    TEST MODAL
-  </button>
-
-  {/* Original Add Task Button */}
-  <AddTaskButton 
-    onClick={() => {
-      // eslint-disable-next-line no-console
-      console.log('AddTaskButton clicked - opening create modal');
-      // eslint-disable-next-line no-console
-      console.log('Current isCreateModalOpen state:', isCreateModalOpen);
-      setIsCreateModalOpen(true);
-      // eslint-disable-next-line no-console
-      console.log('isCreateModalOpen set to true');
-    }}
-  />
-</div>
-
-{/* DEBUG STATE DISPLAY */}
-<div className="fixed top-24 right-3 bg-black text-white p-3 text-xs z-50">
-  Create Modal: {isCreateModalOpen ? 'OPEN' : 'CLOSED'}
-  <br />
-  Edit Modal: {isEditModalOpen ? 'OPEN' : 'CLOSED'}
-</div>
-{/* ###############################Action Buttons Row######### */}
-{/* <div className="flex items-center justify-center gap-6 mb-12">
-  {/* Filters Button - Blue */}
-  {/* <FiltersButton 
-    onClick={() => {
-      console.log('Filters button clicked');
-      // TODO: Open filters modal/panel
-      alert('Filters coming soon!');
-    }}
-  />
-  
-  {/* Collaboration Button - Purple */}
-  {/* <CollaborationButton 
-    onClick={() => {
-      console.log('Collaboration button clicked');
-      // TODO: Open collaboration features
-      alert('Collaboration coming soon!');
-    }} */}
-   
-  
-  {/* Add Task Button - Orange */}
-  {/* <AddTaskButton 
-    onClick={() => {
-      console.log('AddTaskButton clicked - opening create modal');
-      console.log('Current isCreateModalOpen state:', isCreateModalOpen);
-      setIsCreateModalOpen(true);
-      console.log('isCreateModalOpen set to true');
-    }}
-  /> */}
-{/* </div> */}    
-
-          {/* 👈 UPDATED TASK GRID WITH EDIT HANDLER */}
-          <TaskGrid
-            tasks={tasks}
-            onToggleComplete={handleToggleTask}
-            onDelete={handleDeleteTask}
-            onEdit={handleEditTask}
-          />
-
-          {/* 👈 MODALS */}
-          {/* Rendering modals - Create: {isCreateModalOpen}, Edit: {isEditModalOpen} */}
-          
-          {/* Create Task Modal */}
-          <TaskModal
-            isOpen={isCreateModalOpen}
-            onClose={() => {
-              console.log('Create modal onClose called');
-              setIsCreateModalOpen(false);
+        {/* Action Buttons Row */}
+        <div className="flex items-center justify-center gap-6 mb-12">
+          <FiltersButton 
+            onClick={() => {
+              alert('Filters coming soon!');
             }}
-            title="Create New Task"
-          >
-            <TaskForm
-              onSubmit={handleCreateTask}
-              onCancel={() => {
-                console.log('Create form onCancel called');
-                setIsCreateModalOpen(false);
-              }}
-            />
-          </TaskModal>
+          />
+          
+          <CollaborationButton 
+            onClick={() => {
+              alert('Collaboration coming soon!');
+            }}
+          />
+          
+          <AddTaskButton 
+            onClick={() => setIsCreateModalOpen(true)}
+          />
+        </div>
 
-          {/* Edit Task Modal */}
-          <TaskModal
-            isOpen={isEditModalOpen}
-            onClose={() => {
-              console.log('Edit modal onClose called');
+        {/* Task Grid */}
+        <TaskGrid
+          tasks={tasks}
+          onToggleComplete={handleToggleTask}
+          onDelete={handleDeleteTask}
+          onEdit={handleEditTask}
+        />
+
+        {/* Modals */}
+        <TaskModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          title="Create New Task"
+        >
+          <TaskForm
+            onSubmit={handleCreateTask}
+            onCancel={() => setIsCreateModalOpen(false)}
+          />
+        </TaskModal>
+
+        <TaskModal
+          isOpen={isEditModalOpen}
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setEditingTask(null);
+          }}
+          title="Edit Task"
+        >
+          <TaskForm
+            task={editingTask || undefined}
+            onSubmit={handleUpdateTask}
+            onCancel={() => {
               setIsEditModalOpen(false);
               setEditingTask(null);
             }}
-            title="Edit Task"
-          >
-            <TaskForm
-              task={editingTask || undefined}
-              onSubmit={handleUpdateTask}
-              onCancel={() => {
-                console.log('Edit form onCancel called');
-                setIsEditModalOpen(false);
-                setEditingTask(null);
-              }}
-            />
-          </TaskModal>
-        </div>
+          />
+        </TaskModal>
       </div>
-    );
-  }
+    </div>
+  );
+}
