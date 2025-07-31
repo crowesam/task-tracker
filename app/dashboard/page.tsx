@@ -12,8 +12,8 @@ import { Sparkles, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
 import TaskGrid from '@/src/components/ui/TaskGrid';
 import TaskForm from '@/src/components/ui/TaskForm';
 import AddTaskButton from '@/src/components/ui/AddTaskButton';
-import FiltersButton from '@/src/components/ui/FiltersButton';
-import CollaborationButton from '@/src/components/ui/CollaborationButton';
+// import FiltersButton from '@/src/components/ui/FiltersButton';
+// import CollaborationButton from '@/src/components/ui/CollaborationButton';
 // Import the portal-based TaskModal
 import TaskModal from '@/src/components/ui/TaskModal';
  
@@ -254,33 +254,63 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* TEST MODAL BUTTON - Remove after debugging */}
-          {/* <button
-            onClick={() => {
-              console.log('Test modal button clicked');
-              alert('Test button works! Check console for modal state logs.');
-            }}
-            style={{
-              position: 'fixed',
-              top: '10px',
-              right: '10px',
-              zIndex: 99999,
-              background: 'red',
-              color: 'white',
-              padding: '10px 20px',
-              border: 'none',
-              borderRadius: '5px',
-              cursor: 'pointer',
-              fontWeight: 'bold'
-            }}
-          >
-            DEBUG TEST
-          </button> */}
- 
-{/* Action Buttons Row */}
+          {/* Action Buttons Row */}
+
+
+
+{/* DEBUG ACTION BUTTONS ROW */}
 <div className="flex items-center justify-center gap-6 mb-12">
+  {/* Test Button 1 - Basic */}
+  <button 
+    onClick={() => {
+      // eslint-disable-next-line no-console
+      console.log('TEST BUTTON 1 CLICKED');
+      // eslint-disable-next-line no-alert
+      alert('Test button 1 works!');
+    }}
+    className="px-5 py-3 bg-red-500 text-white rounded-full border-none cursor-pointer hover:bg-red-600"
+  >
+    TEST 1
+  </button>
+
+  {/* Test Button 2 - With State */}
+  <button 
+    onClick={() => {
+      // eslint-disable-next-line no-console
+      console.log('TEST BUTTON 2 CLICKED - Modal state before:', isCreateModalOpen);
+      setIsCreateModalOpen(true);  
+      // eslint-disable-next-line no-console
+      console.log('TEST BUTTON 2 - Modal state after:', isCreateModalOpen);
+    }}
+    className="px-5 py-3 bg-blue-500 text-white rounded-full border-none cursor-pointer hover:bg-blue-600"
+  >
+    TEST MODAL
+  </button>
+
+  {/* Original Add Task Button */}
+  <AddTaskButton 
+    onClick={() => {
+      // eslint-disable-next-line no-console
+      console.log('AddTaskButton clicked - opening create modal');
+      // eslint-disable-next-line no-console
+      console.log('Current isCreateModalOpen state:', isCreateModalOpen);
+      setIsCreateModalOpen(true);
+      // eslint-disable-next-line no-console
+      console.log('isCreateModalOpen set to true');
+    }}
+  />
+</div>
+
+{/* DEBUG STATE DISPLAY */}
+<div className="fixed top-24 right-3 bg-black text-white p-3 text-xs z-50">
+  Create Modal: {isCreateModalOpen ? 'OPEN' : 'CLOSED'}
+  <br />
+  Edit Modal: {isEditModalOpen ? 'OPEN' : 'CLOSED'}
+</div>
+{/* ###############################Action Buttons Row######### */}
+{/* <div className="flex items-center justify-center gap-6 mb-12">
   {/* Filters Button - Blue */}
-  <FiltersButton 
+  {/* <FiltersButton 
     onClick={() => {
       console.log('Filters button clicked');
       // TODO: Open filters modal/panel
@@ -289,24 +319,24 @@ export default function Dashboard() {
   />
   
   {/* Collaboration Button - Purple */}
-  <CollaborationButton 
+  {/* <CollaborationButton 
     onClick={() => {
       console.log('Collaboration button clicked');
       // TODO: Open collaboration features
       alert('Collaboration coming soon!');
-    }}
-  />
+    }} */}
+   
   
   {/* Add Task Button - Orange */}
-  <AddTaskButton 
+  {/* <AddTaskButton 
     onClick={() => {
       console.log('AddTaskButton clicked - opening create modal');
       console.log('Current isCreateModalOpen state:', isCreateModalOpen);
       setIsCreateModalOpen(true);
       console.log('isCreateModalOpen set to true');
     }}
-  />
-</div>
+  /> */}
+{/* </div> */}    
 
           {/* 👈 UPDATED TASK GRID WITH EDIT HANDLER */}
           <TaskGrid
