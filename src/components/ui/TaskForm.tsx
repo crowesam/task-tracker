@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Calendar, FileText } from 'lucide-react';
+import { Calendar, FileText, Type } from 'lucide-react';
 import PrioritySelector from './PrioritySelector';
 import TagInput from './TagInput';
 
@@ -86,7 +86,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
     onSubmit(taskData);
   };
 
-  // Enhanced input component - SIMPLIFIED without local state
+  // Enhanced input component - REMOVED live character counter
   const FormInput = ({ 
     label, 
     value, 
@@ -112,11 +112,6 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
     <div className="space-y-3 mb-6">
       <label className="block text-black font-semibold text-sm tracking-wide uppercase">
         {label}
-        {maxLength && (
-          <span className="text-gray-500 text-xs ml-2 normal-case">
-            ({value.length}/{maxLength})
-          </span>
-        )}
       </label>
       
       <div 
@@ -166,7 +161,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
     </div>
   );
 
-  // Enhanced textarea component - SIMPLIFIED without local state
+  // Enhanced textarea component - REMOVED live character counter
   const FormTextarea = ({ 
     label, 
     value, 
@@ -189,11 +184,6 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
     <div className="space-y-3 mb-6">
       <label className="block text-black font-semibold text-sm tracking-wide uppercase">
         {label}
-        {maxLength && (
-          <span className="text-gray-500 text-xs ml-2 normal-case">
-            ({value.length}/{maxLength})
-          </span>
-        )}
       </label>
       
       <div 
