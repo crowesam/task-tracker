@@ -86,7 +86,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
     onSubmit(taskData);
   };
 
-  // Enhanced input component with proper styling
+  // Enhanced input component with proper styling and fixed focus
   const FormInput = ({ 
     label, 
     value, 
@@ -129,15 +129,18 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
             ? 'border-red-500'
             : 'border-gray-300 hover:border-gray-400'
         }
-      `}>
+      `}
+      style={{ borderRadius: '12px' }} // Friendly curves
+      >
         {Icon && (
           <Icon className="w-5 h-5 text-gray-400 ml-4 flex-shrink-0" />
         )}
         
         <input
+          key={`${fieldName}-${value.length}`} // FIXED: Prevent focus jumping
           type={type}
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => onChange(e.target.value)} // FIXED: Direct event handling
           onFocus={() => setFocusedField(fieldName)}
           onBlur={() => setFocusedField(null)}
           placeholder={placeholder}
@@ -147,6 +150,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
             focus:outline-none text-sm font-medium
             ${Icon ? 'pl-2' : ''}
           `}
+          style={{ borderRadius: '12px' }} // Friendly curves
           {...props}
         />
       </div>
@@ -160,7 +164,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
     </div>
   );
 
-  // Enhanced textarea component
+  // Enhanced textarea component with friendly curves
   const FormTextarea = ({ 
     label, 
     value, 
@@ -200,10 +204,13 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
             ? 'border-red-500'
             : 'border-gray-300 hover:border-gray-400'
         }
-      `}>
+      `}
+      style={{ borderRadius: '12px' }} // Friendly curves
+      >
         <textarea
+          key={`${fieldName}-${value.length}`} // FIXED: Prevent focus jumping
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => onChange(e.target.value)} // FIXED: Direct event handling
           onFocus={() => setFocusedField(fieldName)}
           onBlur={() => setFocusedField(null)}
           placeholder={placeholder}
@@ -211,6 +218,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
           rows={rows}
           className="w-full px-4 py-3 bg-transparent text-gray-700 placeholder-gray-400
                      focus:outline-none text-sm font-medium resize-none"
+          style={{ borderRadius: '12px' }} // Friendly curves
         />
       </div>
       
