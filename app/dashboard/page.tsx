@@ -182,6 +182,141 @@ export default function Dashboard() {
           </div>
         </div>
       </nav>
+ 'use client';
+
+import React, { useEffect } from 'react';
+import { X } from 'lucide-react';
+
+interface TaskModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  title: string;
+  children: React.ReactNode;
+}
+
+const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, title, children }) => {
+  console.log('TaskModal render - isOpen:', isOpen, 'title:', title);
+
+  // Handle escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        console.log('Escape key pressed, closing modal');
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      console.log('Modal is open, adding event listeners');
+      document.addEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'hidden';
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen, onClose]);
+
+  // Don't render if closed
+  if (!isOpen) {
+    console.log('Modal is closed, returning null');
+    return null;
+  }
+
+  console.log('Modal is open, rendering content');
+
+  // Simple modal without portal for now
+  return (
+    <div 
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0,0,0,0.7)',
+        zIndex: 999999,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '20px'
+      }}
+      onClick={onClose}
+    >
+      <div 
+        style={{
+          backgroundColor: 'rgba(255,255,255,0.95)',
+          backdropFilter: 'blur(20px)',
+          borderRadius: '16px',
+          padding: '0',
+          maxWidth: '500px',
+          width: '100%',
+          maxHeight: '90vh',
+          overflow: 'hidden',
+          border: '1px solid rgba(255,255,255,0.3)',
+          boxShadow: '0 25px 50px rgba(0,0,0,0.3)'
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: '24px',
+          borderBottom: '1px solid rgba(0,0,0,0.1)'
+        }}>
+          <h2 style={{
+            margin: 0,
+            fontSize: '24px',
+            fontWeight: 'bold',
+            color: '#333'
+          }}>
+            {title}
+          </h2>
+          
+          <button
+            onClick={onClose}
+            style={{
+              background: 'rgba(0,0,0,0.1)',
+              border: 'none',
+              borderRadius: '50%',
+              width: '40px',
+              height: '40px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.background = 'rgba(0,0,0,0.2)';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.background = 'rgba(0,0,0,0.1)';
+            }}
+          >
+            <X size={20} color="#333" />
+          </button>
+        </div>
+
+        {/* Content */}
+        <div style={{
+          padding: '24px',
+          maxHeight: 'calc(90vh - 120px)',
+          overflowY: 'auto'
+        }}>
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default TaskModal;
+
+
 
       {/* Welcome Section */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 pt-8 pb-12">
