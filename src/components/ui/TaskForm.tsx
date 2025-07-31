@@ -86,7 +86,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
     onSubmit(taskData);
   };
 
-  // Enhanced input component with proper styling and fixed focus
+  // Enhanced input component with glassmorphism and fixed typing
   const FormInput = ({ 
     label, 
     value, 
@@ -119,28 +119,33 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
         )}
       </label>
       
-      <div className={`
-        relative flex items-center
-        bg-white border-2 rounded-xl
-        transition-all duration-300
-        ${focusedField === fieldName
-          ? 'border-orange-500 shadow-lg shadow-orange-500/20 scale-[1.01]' 
-          : error 
-            ? 'border-red-500'
-            : 'border-gray-300 hover:border-gray-400'
-        }
-      `}
-      style={{ borderRadius: '12px' }} // Friendly curves
+      <div 
+        className={`
+          relative flex items-center border-2 rounded-xl transition-all duration-300
+          ${focusedField === fieldName
+            ? 'border-orange-500 shadow-lg shadow-orange-500/20 scale-[1.01]' 
+            : error 
+              ? 'border-red-500'
+              : 'border-gray-300 hover:border-gray-400'
+          }
+        `}
+        style={{ 
+          borderRadius: '12px',
+          background: 'rgba(255, 255, 255, 0.8)', // Translucent glassmorphism
+          backdropFilter: 'blur(10px)'
+        }}
       >
         {Icon && (
           <Icon className="w-5 h-5 text-gray-400 ml-4 flex-shrink-0" />
         )}
         
         <input
-          key={`${fieldName}-${value.length}`} // FIXED: Prevent focus jumping
           type={type}
           value={value}
-          onChange={(e) => onChange(e.target.value)} // FIXED: Direct event handling
+          onChange={(e) => {
+            // SIMPLIFIED: Direct state update like tag input
+            onChange(e.target.value);
+          }}
           onFocus={() => setFocusedField(fieldName)}
           onBlur={() => setFocusedField(null)}
           placeholder={placeholder}
@@ -150,7 +155,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
             focus:outline-none text-sm font-medium
             ${Icon ? 'pl-2' : ''}
           `}
-          style={{ borderRadius: '12px' }} // Friendly curves
+          style={{ borderRadius: '12px' }}
           {...props}
         />
       </div>
@@ -164,7 +169,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
     </div>
   );
 
-  // Enhanced textarea component with friendly curves
+  // Enhanced textarea component with glassmorphism
   const FormTextarea = ({ 
     label, 
     value, 
@@ -194,23 +199,28 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
         )}
       </label>
       
-      <div className={`
-        relative
-        bg-white border-2 rounded-xl
-        transition-all duration-300
-        ${focusedField === fieldName
-          ? 'border-orange-500 shadow-lg shadow-orange-500/20 scale-[1.01]' 
-          : error 
-            ? 'border-red-500'
-            : 'border-gray-300 hover:border-gray-400'
-        }
-      `}
-      style={{ borderRadius: '12px' }} // Friendly curves
+      <div 
+        className={`
+          relative border-2 rounded-xl transition-all duration-300
+          ${focusedField === fieldName
+            ? 'border-orange-500 shadow-lg shadow-orange-500/20 scale-[1.01]' 
+            : error 
+              ? 'border-red-500'
+              : 'border-gray-300 hover:border-gray-400'
+          }
+        `}
+        style={{ 
+          borderRadius: '12px',
+          background: 'rgba(255, 255, 255, 0.8)', // Translucent glassmorphism
+          backdropFilter: 'blur(10px)'
+        }}
       >
         <textarea
-          key={`${fieldName}-${value.length}`} // FIXED: Prevent focus jumping
           value={value}
-          onChange={(e) => onChange(e.target.value)} // FIXED: Direct event handling
+          onChange={(e) => {
+            // SIMPLIFIED: Direct state update like tag input
+            onChange(e.target.value);
+          }}
           onFocus={() => setFocusedField(fieldName)}
           onBlur={() => setFocusedField(null)}
           placeholder={placeholder}
@@ -218,7 +228,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
           rows={rows}
           className="w-full px-4 py-3 bg-transparent text-gray-700 placeholder-gray-400
                      focus:outline-none text-sm font-medium resize-none"
-          style={{ borderRadius: '12px' }} // Friendly curves
+          style={{ borderRadius: '12px' }}
         />
       </div>
       
