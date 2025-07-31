@@ -1,4 +1,9 @@
-// Portal-based TaskModal component - FIXED OVERLAY
+'use client';
+
+import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom'; // ← MISSING IMPORT ADDED
+import { X } from 'lucide-react';
+
 interface TaskModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -113,7 +118,10 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, title, children 
     </div>
   );
 
+  // PORTAL RENDERING - Now with proper import
   return typeof window !== 'undefined' 
     ? createPortal(<ModalContent />, document.body)
     : null;
 };
+
+export default TaskModal;
