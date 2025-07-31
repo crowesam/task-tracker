@@ -29,7 +29,7 @@ export default function PrivacyPolicy() {
             <section className="mb-8">
               <h2 className="text-2xl font-bold text-white mb-4">Overview</h2>
               <p className="text-white/90 leading-relaxed">
-                Medilios ("we," "our," or "us") operates the Task Tracker application (the "Service"). 
+                Medilios (&ldquo;we,&rdquo; &ldquo;our,&rdquo; or &ldquo;us&rdquo;) operates the Task Tracker application (the &ldquo;Service&rdquo;). 
                 This privacy policy explains how we collect, use, and protect your information when you use our Service.
               </p>
             </section>
@@ -148,7 +148,7 @@ export default function PrivacyPolicy() {
               <h2 className="text-2xl font-bold text-white mb-4">Updates to This Policy</h2>
               <p className="text-white/90">
                 We may update this privacy policy from time to time. When we do, we will post 
-                the updated policy on this page and update the "Last Updated" date.
+                the updated policy on this page and update the &ldquo;Last Updated&rdquo; date.
               </p>
             </section>
 

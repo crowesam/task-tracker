@@ -29,8 +29,8 @@ export default function TermsOfService() {
             <section className="mb-8">
               <h2 className="text-2xl font-bold text-white mb-4">1. Acceptance of Terms</h2>
               <p className="text-white/90 leading-relaxed">
-                By accessing or using the Medilios Task Tracker application ("Service"), you agree to be bound by these 
-                Terms of Service ("Terms"). If you disagree with any part of these terms, you may not access the Service.
+                By accessing or using the Medilios Task Tracker application (&ldquo;Service&rdquo;), you agree to be bound by these 
+                Terms of Service (&ldquo;Terms&rdquo;). If you disagree with any part of these terms, you may not access the Service.
               </p>
             </section>
 
@@ -125,7 +125,7 @@ export default function TermsOfService() {
               <div className="bg-yellow-500/20 border border-yellow-500/30 rounded-lg p-4 mb-4">
                 <h3 className="text-white font-semibold mb-2">⚠️ Important Service Terms</h3>
                 <ul className="text-white/90 text-sm space-y-1">
-                  <li>• Service is provided "as is" without guarantees of uptime</li>
+                  <li>• Service is provided &ldquo;as is&rdquo; without guarantees of uptime</li>
                   <li>• We may modify, suspend, or discontinue features at any time</li>
                   <li>• Scheduled maintenance may cause temporary downtime</li>
                   <li>• We will provide reasonable notice for major changes</li>
@@ -161,7 +161,7 @@ export default function TermsOfService() {
                 <div className="text-white/90 text-sm space-y-2">
                   <p><strong>TO THE MAXIMUM EXTENT PERMITTED BY LAW:</strong></p>
                   <ul className="list-disc list-inside space-y-1">
-                    <li>The Service is provided "AS IS" without warranties of any kind</li>
+                    <li>The Service is provided &ldquo;AS IS&rdquo; without warranties of any kind</li>
                     <li>We are not liable for any indirect, incidental, or consequential damages</li>
                     <li>Our total liability shall not exceed $100 or the amount you paid us (if any)</li>
                     <li>We are not responsible for data loss, though we use reasonable backup measures</li>
@@ -197,7 +197,7 @@ export default function TermsOfService() {
                   <ul className="text-white/90 list-disc list-inside space-y-1">
                     <li>We may terminate accounts for Terms violations</li>
                     <li>We may suspend accounts during investigations</li>
-                    <li>We'll provide reasonable notice when possible</li>
+                    <li>We&rsquo;ll provide reasonable notice when possible</li>
                   </ul>
                 </div>
               </div>
