@@ -2,7 +2,6 @@
 
 import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X } from 'lucide-react';
 
 interface TaskModalProps {
   isOpen: boolean;
@@ -11,21 +10,18 @@ interface TaskModalProps {
   children: React.ReactNode;
 }
 
-const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, title, children }) => {
-  // eslint-disable-next-line no-console
+const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, title }) => {
   console.log('TaskModal render - isOpen:', isOpen, 'title:', title);
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        // eslint-disable-next-line no-console
         console.log('Escape key pressed, closing modal');
         onClose();
       }
     };
 
     if (isOpen) {
-      // eslint-disable-next-line no-console
       console.log('Modal is open, adding event listeners');
       document.addEventListener('keydown', handleEscape);
       document.body.style.overflow = 'hidden';
@@ -38,12 +34,10 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, title, children 
   }, [isOpen, onClose]);
 
   if (!isOpen) {
-    // eslint-disable-next-line no-console
     console.log('Modal is closed, returning null');
     return null;
   }
 
-  // eslint-disable-next-line no-console
   console.log('Modal is open, rendering with portal');
 
   const ModalContent = () => (
