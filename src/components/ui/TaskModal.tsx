@@ -11,18 +11,14 @@ interface TaskModalProps {
 }
 
 const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, title }) => {
-  console.log('TaskModal render - isOpen:', isOpen, 'title:', title);
-
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        console.log('Escape key pressed, closing modal');
         onClose();
       }
     };
 
     if (isOpen) {
-      console.log('Modal is open, adding event listeners');
       document.addEventListener('keydown', handleEscape);
       document.body.style.overflow = 'hidden';
     }
@@ -34,57 +30,87 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, title }) => {
   }, [isOpen, onClose]);
 
   if (!isOpen) {
-    console.log('Modal is closed, returning null');
     return null;
   }
 
-  console.log('Modal is open, rendering with portal');
-
   const ModalContent = () => (
     <div 
-      className="fixed inset-0 flex items-center justify-center p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="modal-title"
       style={{
-        backgroundColor: 'rgba(255, 0, 0, 0.8)',
         position: 'fixed',
         top: 0,
         left: 0,
         right: 0,
         bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.3)',
         zIndex: 999999,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center'
       }}
+      onClick={onClose}
     >
-      <div style={{
-        backgroundColor: 'white',
-        color: 'black', 
-        padding: '20px',
-        borderRadius: '10px',
-        fontSize: '24px',
-        fontWeight: 'bold'
-      }}>
-        🚨 DEBUG: MODAL IS RENDERING! 🚨
-        <br />
-        Title: {title}
-        <br />
-        <button 
-          onClick={onClose}
-          style={{
-            marginTop: '10px',
-            padding: '10px 20px',
-            backgroundColor: 'blue',
-            color: 'white',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer'
-          }}
-        >
-          Close Modal
-        </button>
+      <div 
+        style={{
+          background: 'rgba(255,255,255,0.15)',
+          backdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255,255,255,0.2)',
+          borderRadius: '16px',
+          padding: '0',
+          maxWidth: '500px',
+          width: '90%',
+          maxHeight: '90vh',
+          overflow: 'hidden',
+          boxShadow: '0 25px 50px rgba(0,0,0,0.3)'
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: '24px',
+          borderBottom: '1px solid rgba(255,255,255,0.1)'
+        }}>
+          <h2 style={{
+            margin: 0,
+            fontSize: '24px',
+            fontWeight: 'bold',
+            color: 'white'
+          }}>
+            {title}
+          </h2>
+          
+          <button
+            onClick={onClose}
+            style={{
+              background: 'rgba(255,255,255,0.1)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              borderRadius: '50%',
+              width: '40px',
+              height: '40px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              color: 'white',
+              fontSize: '20px'
+            }}
+          >
+            ×
+          </button>
+        </div>
+
+        {/* Content */}
+        <div style={{
+          padding: '24px',
+          maxHeight: 'calc(90vh - 120px)',
+          overflowY: 'auto',
+          color: 'white'
+        }}>
+          <p>TaskForm will go here!</p>
+          <p>Modal is working perfectly now! 🎉</p>
+        </div>
       </div>
     </div>
   );
