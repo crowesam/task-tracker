@@ -32,7 +32,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, title }) => {
   if (!isOpen) {
     return null;
   }
-
+// Real change is hard
   const ModalContent = () => (
     <div 
       style={{
