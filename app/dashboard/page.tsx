@@ -17,7 +17,7 @@ import AddTaskButton from '@/src/components/ui/AddTaskButton';
 // Import the portal-based TaskModal
 import TaskModal from '@/src/components/ui/TaskModal';
  
-export default function Dashboard() {
+export default function Dashboard(){
   const user = useUser();
   const router = useRouter();
   
