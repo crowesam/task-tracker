@@ -12,7 +12,8 @@ import { Sparkles, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
 import TaskGrid from '@/src/components/ui/TaskGrid';
 import TaskForm from '@/src/components/ui/TaskForm';
 import AddTaskButton from '@/src/components/ui/AddTaskButton';
-
+import FiltersButton from '@/src/components/ui/FiltersButton';
+import CollaborationButton from '@/src/components/ui/CollaborationButton';
 // Import the portal-based TaskModal
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
@@ -348,7 +349,7 @@ export default function Dashboard() {
           </div>
 
           {/* TEST MODAL BUTTON - Remove after debugging */}
-          <button
+          {/* <button
             onClick={() => {
               console.log('Test modal button clicked');
               alert('Test button works! Check console for modal state logs.');
@@ -368,18 +369,38 @@ export default function Dashboard() {
             }}
           >
             DEBUG TEST
-          </button>
-
-          {/* 👈 ADD TASK BUTTON */}
-          <AddTaskButton 
-            onClick={() => {
-              console.log('AddTaskButton clicked - opening create modal');
-              console.log('Current isCreateModalOpen state:', isCreateModalOpen);
-              setIsCreateModalOpen(true);
-              console.log('isCreateModalOpen set to true');
-            }}
-            className="mb-12"
-          />
+          </button> */}
+ 
+{/* Action Buttons Row */}
+<div className="flex items-center justify-center gap-6 mb-12">
+  {/* Filters Button - Blue */}
+  <FiltersButton 
+    onClick={() => {
+      console.log('Filters button clicked');
+      // TODO: Open filters modal/panel
+      alert('Filters coming soon!');
+    }}
+  />
+  
+  {/* Collaboration Button - Purple */}
+  <CollaborationButton 
+    onClick={() => {
+      console.log('Collaboration button clicked');
+      // TODO: Open collaboration features
+      alert('Collaboration coming soon!');
+    }}
+  />
+  
+  {/* Add Task Button - Orange */}
+  <AddTaskButton 
+    onClick={() => {
+      console.log('AddTaskButton clicked - opening create modal');
+      console.log('Current isCreateModalOpen state:', isCreateModalOpen);
+      setIsCreateModalOpen(true);
+      console.log('isCreateModalOpen set to true');
+    }}
+  />
+</div>
 
           {/* 👈 UPDATED TASK GRID WITH EDIT HANDLER */}
           <TaskGrid
