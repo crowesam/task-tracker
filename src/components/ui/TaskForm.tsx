@@ -1,4 +1,4 @@
- 'use client';
+'use client';
 
 import React, { useState } from 'react';
 import { Calendar, FileText, Type } from 'lucide-react';
@@ -18,7 +18,7 @@ interface Task {
 }
 
 interface TaskFormProps {
-  task?: Task; // Optional - if provided, we're editing; if not, we're creating
+  task?: Task;
   onSubmit: (taskData: Omit<Task, 'id' | 'createdAt'>) => void;
   onCancel: () => void;
 }
@@ -86,8 +86,8 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
     onSubmit(taskData);
   };
 
-  // Enhanced input component with glassmorphism styling
-  const GlassInput = ({ 
+  // Enhanced input component with proper styling
+  const FormInput = ({ 
     label, 
     value, 
     onChange, 
@@ -110,10 +110,10 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
     maxLength?: number;
   }) => (
     <div className="space-y-2">
-      <label className="block text-white font-semibold text-sm tracking-wide uppercase">
+      <label className="block text-black font-semibold text-sm tracking-wide uppercase">
         {label}
         {maxLength && (
-          <span className="text-white/60 text-xs ml-2 normal-case">
+          <span className="text-gray-500 text-xs ml-2 normal-case">
             ({value.length}/{maxLength})
           </span>
         )}
@@ -121,17 +121,17 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
       
       <div className={`
         relative flex items-center
-        bg-white/10 backdrop-blur-md border rounded-xl
+        bg-white border-2 rounded-xl
         transition-all duration-300
         ${focusedField === fieldName
-          ? 'border-orange-500/50 bg-white/15 shadow-lg shadow-orange-500/10 scale-[1.02]' 
+          ? 'border-orange-500 shadow-lg shadow-orange-500/20 scale-[1.01]' 
           : error 
-            ? 'border-red-500/50 bg-red-500/5'
-            : 'border-white/20 hover:border-white/30'
+            ? 'border-red-500'
+            : 'border-gray-300 hover:border-gray-400'
         }
       `}>
         {Icon && (
-          <Icon className="w-5 h-5 text-white/60 ml-4 flex-shrink-0" />
+          <Icon className="w-5 h-5 text-gray-400 ml-4 flex-shrink-0" />
         )}
         
         <input
@@ -143,7 +143,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
           placeholder={placeholder}
           maxLength={maxLength}
           className={`
-            flex-1 px-4 py-3 bg-transparent text-white placeholder-white/50 
+            flex-1 px-4 py-3 bg-transparent text-gray-700 placeholder-gray-400
             focus:outline-none text-sm font-medium
             ${Icon ? 'pl-2' : ''}
           `}
@@ -152,8 +152,8 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
       </div>
       
       {error && (
-        <p className="text-red-400 text-xs mt-1 flex items-center gap-1">
-          <span className="w-1 h-1 bg-red-400 rounded-full"></span>
+        <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+          <span className="w-1 h-1 bg-red-500 rounded-full"></span>
           {error}
         </p>
       )}
@@ -161,7 +161,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
   );
 
   // Enhanced textarea component
-  const GlassTextarea = ({ 
+  const FormTextarea = ({ 
     label, 
     value, 
     onChange, 
@@ -181,10 +181,10 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
     rows?: number;
   }) => (
     <div className="space-y-2">
-      <label className="block text-white font-semibold text-sm tracking-wide uppercase">
+      <label className="block text-black font-semibold text-sm tracking-wide uppercase">
         {label}
         {maxLength && (
-          <span className="text-white/60 text-xs ml-2 normal-case">
+          <span className="text-gray-500 text-xs ml-2 normal-case">
             ({value.length}/{maxLength})
           </span>
         )}
@@ -192,13 +192,13 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
       
       <div className={`
         relative
-        bg-white/10 backdrop-blur-md border rounded-xl
+        bg-white border-2 rounded-xl
         transition-all duration-300
         ${focusedField === fieldName
-          ? 'border-orange-500/50 bg-white/15 shadow-lg shadow-orange-500/10 scale-[1.02]' 
+          ? 'border-orange-500 shadow-lg shadow-orange-500/20 scale-[1.01]' 
           : error 
-            ? 'border-red-500/50 bg-red-500/5'
-            : 'border-white/20 hover:border-white/30'
+            ? 'border-red-500'
+            : 'border-gray-300 hover:border-gray-400'
         }
       `}>
         <textarea
@@ -209,14 +209,14 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
           placeholder={placeholder}
           maxLength={maxLength}
           rows={rows}
-          className="w-full px-4 py-3 bg-transparent text-white placeholder-white/50 
+          className="w-full px-4 py-3 bg-transparent text-gray-700 placeholder-gray-400
                      focus:outline-none text-sm font-medium resize-none"
         />
       </div>
       
       {error && (
-        <p className="text-red-400 text-xs mt-1 flex items-center gap-1">
-          <span className="w-1 h-1 bg-red-400 rounded-full"></span>
+        <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+          <span className="w-1 h-1 bg-red-500 rounded-full"></span>
           {error}
         </p>
       )}
@@ -226,7 +226,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Task Title */}
-      <GlassInput
+      <FormInput
         label="Task Title"
         value={title}
         onChange={setTitle}
@@ -235,11 +235,10 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
         error={errors.title}
         fieldName="title"
         maxLength={100}
-        // required
       />
 
       {/* Task Description */}
-      <GlassTextarea
+      <FormTextarea
         label="Description"
         value={description}
         onChange={setDescription}
@@ -253,7 +252,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
       {/* Category and Due Date Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Category */}
-        <GlassInput
+        <FormInput
           label="Category"
           value={category}
           onChange={setCategory}
@@ -265,7 +264,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
         />
 
         {/* Due Date */}
-        <GlassInput
+        <FormInput
           label="Due Date"
           value={dueDate}
           onChange={setDueDate}
@@ -276,29 +275,39 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
       </div>
 
       {/* Priority Selector */}
-      <PrioritySelector
-        selectedPriority={priority}
-        onPriorityChange={setPriority}
-      />
+      <div className="space-y-2">
+        <label className="block text-black font-semibold text-sm tracking-wide uppercase">
+          Priority Level
+        </label>
+        <PrioritySelector
+          selectedPriority={priority}
+          onPriorityChange={setPriority}
+        />
+      </div>
 
       {/* Tags Input */}
-      <TagInput
-        tags={tags}
-        onTagsChange={setTags}
-        maxTags={8}
-        maxTagLength={8}
-      />
+      <div className="space-y-2">
+        <label className="block text-black font-semibold text-sm tracking-wide uppercase">
+          Tags (Max 8)
+        </label>
+        <TagInput
+          tags={tags}
+          onTagsChange={setTags}
+          maxTags={8}
+          maxTagLength={8}
+        />
+      </div>
 
       {/* Form Actions */}
-      <div className="flex items-center justify-between pt-6 border-t border-white/10">
+      <div className="flex items-center justify-between pt-6 border-t border-gray-200">
         {/* Cancel Button */}
         <button
           type="button"
           onClick={onCancel}
-          className="px-6 py-3 rounded-xl font-semibold text-white
-                     bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/30
+          className="px-6 py-3 rounded-xl font-semibold text-gray-700
+                     bg-gray-100 hover:bg-gray-200 border-2 border-gray-300 hover:border-gray-400
                      transition-all duration-300 hover:scale-105
-                     focus:outline-none focus:ring-2 focus:ring-white/50"
+                     focus:outline-none focus:ring-2 focus:ring-gray-500"
         >
           Cancel
         </button>
@@ -323,7 +332,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
 
       {/* Form Helper */}
       <div className="text-center">
-        <p className="text-white/50 text-xs">
+        <p className="text-gray-500 text-xs">
           {isEditing ? 'Edit your task details above' : 'Fill in the details to create your new task'}
         </p>
       </div>

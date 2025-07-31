@@ -66,25 +66,22 @@ const TagInput: React.FC<TagInputProps> = ({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <label className="block text-white font-semibold text-sm tracking-wide uppercase">
-          Tags
-        </label>
-        <span className="text-white/60 text-xs">
+        <span className="text-gray-500 text-xs">
           {tags.length}/{maxTags} tags
         </span>
       </div>
 
       {/* Current Tags Display */}
       {tags.length > 0 && (
-        <div className="flex flex-wrap gap-2 p-4 rounded-xl bg-white/5 border border-white/10">
+        <div className="flex flex-wrap gap-2 p-4 rounded-xl bg-gray-50 border-2 border-gray-200">
           {tags.map((tag, index) => (
             <div
               key={index}
               className="inline-flex items-center gap-1 px-3 py-1.5 
                          bg-gradient-to-r from-orange-500 to-orange-600 
-                         text-black text-xs font-bold rounded-full
+                         text-white text-xs font-bold rounded-full
                          shadow-lg hover:shadow-orange-500/25 transition-all duration-300
-                         hover:scale-105"
+                         hover:scale-105 border-2 border-black"
               title={tag.length > 4 ? tag : undefined}
             >
               <span>{displayTag(tag)}</span>
@@ -107,11 +104,11 @@ const TagInput: React.FC<TagInputProps> = ({
         <div className="space-y-3">
           <div className={`
             relative flex items-center
-            bg-white/10 backdrop-blur-md border rounded-xl
+            bg-white border-2 rounded-xl
             transition-all duration-300
             ${isInputFocused 
-              ? 'border-orange-500/50 bg-white/15 shadow-lg shadow-orange-500/10' 
-              : 'border-white/20 hover:border-white/30'
+              ? 'border-orange-500 shadow-lg shadow-orange-500/20 scale-[1.01]' 
+              : 'border-gray-300 hover:border-gray-400'
             }
           `}>
             <input
@@ -122,7 +119,7 @@ const TagInput: React.FC<TagInputProps> = ({
               onFocus={() => setIsInputFocused(true)}
               onBlur={() => setIsInputFocused(false)}
               placeholder={placeholder}
-              className="flex-1 px-4 py-3 bg-transparent text-white placeholder-white/50 
+              className="flex-1 px-4 py-3 bg-transparent text-gray-700 placeholder-gray-400
                          focus:outline-none text-sm font-medium"
               maxLength={maxTagLength}
             />
@@ -142,7 +139,7 @@ const TagInput: React.FC<TagInputProps> = ({
 
           {/* Character counter */}
           {inputValue && (
-            <div className="text-right text-white/50 text-xs">
+            <div className="text-right text-gray-500 text-xs">
               {inputValue.length}/{maxTagLength} characters
             </div>
           )}
@@ -152,7 +149,7 @@ const TagInput: React.FC<TagInputProps> = ({
       {/* Frequent Tags Quick Select */}
       {getAvailableFrequentTags().length > 0 && tags.length < maxTags && (
         <div className="space-y-2">
-          <label className="block text-white/70 text-xs font-medium uppercase tracking-wide">
+          <label className="block text-gray-600 text-xs font-medium uppercase tracking-wide">
             Quick Add
           </label>
           <div className="flex flex-wrap gap-2">
@@ -160,10 +157,10 @@ const TagInput: React.FC<TagInputProps> = ({
               <button
                 key={tag}
                 onClick={() => addTag(tag)}
-                className="px-3 py-1.5 text-xs font-medium text-white/80
-                           bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/30
+                className="px-3 py-1.5 text-xs font-medium text-gray-600
+                           bg-gray-100 hover:bg-gray-200 border-2 border-gray-300 hover:border-gray-400
                            rounded-full transition-all duration-300
-                           hover:scale-105 hover:text-white"
+                           hover:scale-105 hover:text-gray-800"
               >
                 {tag}
               </button>
@@ -173,7 +170,7 @@ const TagInput: React.FC<TagInputProps> = ({
       )}
 
       {/* Helper text */}
-      <p className="text-white/50 text-xs">
+      <p className="text-gray-500 text-xs">
         Press Enter or comma to add tags. Max {maxTagLength} characters per tag.
       </p>
     </div>

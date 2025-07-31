@@ -37,10 +37,6 @@ const PrioritySelector: React.FC<PrioritySelectorProps> = ({
 
   return (
     <div className="space-y-3">
-      <label className="block text-white font-semibold text-sm tracking-wide uppercase">
-        Priority Level
-      </label>
-      
       {/* SINGLE ROW LAYOUT - COMPACT */}
       <div className="flex gap-3">
         {priorities.map((priority) => (
@@ -54,8 +50,9 @@ const PrioritySelector: React.FC<PrioritySelectorProps> = ({
               transition-all duration-300 ease-out
               hover:scale-105 hover:-translate-y-0.5 hover:shadow-lg ${priority.shadow}
               focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-transparent
+              border-2 border-transparent
               ${selectedPriority === priority.value 
-                ? `scale-105 -translate-y-0.5 shadow-lg ${priority.activeShadow} ring-2 ring-white/30` 
+                ? `scale-105 -translate-y-0.5 shadow-lg ${priority.activeShadow} ring-2 ring-white/30 border-white/50` 
                 : ''
               }
             `}
@@ -86,7 +83,7 @@ const PrioritySelector: React.FC<PrioritySelectorProps> = ({
       </div>
       
       {/* Helper text */}
-      <p className="text-white/60 text-xs">
+      <p className="text-gray-600 text-xs">
         Priority affects the colored corner indicator on your task card
       </p>
     </div>
