@@ -103,14 +103,18 @@ const TagInput: React.FC<TagInputProps> = ({
       {tags.length < maxTags && (
         <div className="space-y-3">
           <div className={`
-            relative flex items-center
-            bg-white border-2 rounded-xl
-            transition-all duration-300
+            relative flex items-center border-2 rounded-xl transition-all duration-300
             ${isInputFocused 
               ? 'border-orange-500 shadow-lg shadow-orange-500/20 scale-[1.01]' 
               : 'border-gray-300 hover:border-gray-400'
             }
-          `}>
+          `}
+          style={{ 
+            borderRadius: '12px',
+            background: 'rgba(255, 255, 255, 0.8)', // Translucent glassmorphism
+            backdropFilter: 'blur(10px)'
+          }}
+          >
             <input
               type="text"
               value={inputValue}
