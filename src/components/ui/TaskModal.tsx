@@ -10,7 +10,7 @@ interface TaskModalProps {
   children: React.ReactNode;
 }
 
-const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, title }) => {
+const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, title, children }) => {
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -32,7 +32,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, title }) => {
   if (!isOpen) {
     return null;
   }
-// Real change is hard
+
   const ModalContent = () => (
     <div 
       style={{
@@ -105,11 +105,9 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, title }) => {
         <div style={{
           padding: '24px',
           maxHeight: 'calc(90vh - 120px)',
-          overflowY: 'auto',
-          color: 'white'
+          overflowY: 'auto'
         }}>
-          <p>TaskForm will go here!</p>
-          <p>Modal is working perfectly now! 🎉</p>
+          {children}
         </div>
       </div>
     </div>
