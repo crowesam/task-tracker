@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { createPortal } from 'react-dom'; // ← MISSING IMPORT ADDED
-import { X } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { X } from 'lucide-react'; // ← X icon import was missing
 
 interface TaskModalProps {
   isOpen: boolean;
@@ -11,6 +11,7 @@ interface TaskModalProps {
   children: React.ReactNode;
 }
 
+// Remove the unused variable error by using it properly
 const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, title, children }) => {
   console.log('TaskModal render - isOpen:', isOpen, 'title:', title);
 
