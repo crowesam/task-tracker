@@ -234,7 +234,9 @@ export class BadgeSystem {
     
     // Helper to check if badge already unlocked
     const hasBadge = (badgeId: string): boolean => {
-      return currentBadges.some(badge => badge.id === badgeId && badge.unlockedAt);
+      const result = currentBadges.some(badge => badge.id === badgeId && badge.unlockedAt);
+      console.log(`Checking badge ${badgeId}:`, result ? 'already unlocked' : 'available');
+      return result;
     };
     
     // Check Task Master (100 total completions)
@@ -279,16 +281,29 @@ export class BadgeSystem {
     
     // Check Procrastinator Reformed (complete overdue task)
     const hasOverdueCompletion = tasks.some(t => 
-      t.completed && t.dueDate && new Date(t.dueDate) < new Date(t.updatedAt || t.createdAt)
+      t.completed && t.dueDate && t.updatedAt &&
+      new Date(t.dueDate) < new Date(t.updatedAt)
     );
     
+    console.log('Overdue completion check:', hasOverdueCompletion);
+    
     if (hasOverdueCompletion && !hasBadge('procrastinatorReformed')) {
+      console.log('Unlocking Procrastinator Reformed!');
       newBadges.push({
         badgeId: 'procrastinatorReformed',
         unlockedAt: new Date(),
         aiComment: "Better late than never, human. The algorithm forgives you... this time.",
         specialMessage: "Redemption arc detected. Character development: +1"
       });
+      
+      // Add the unlocked badge to updatedBadges
+      const badgeIndex = updatedBadges.findIndex(b => b.id === 'procrastinatorReformed');
+      if (badgeIndex >= 0) {
+        updatedBadges[badgeIndex] = {
+          ...updatedBadges[badgeIndex],
+          unlockedAt: new Date()
+        };
+      }
     }
     
     // Check time-based badges (would need actual completion timestamps)

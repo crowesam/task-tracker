@@ -38,7 +38,9 @@ export const useGamification = (tasks: FrontendTask[], userId: string | null) =>
 
   // Check for new achievements when tasks change
   const checkAchievements = useCallback(() => {
-    if (!userId || tasks.length === 0) return;
+    if (!userId || tasks.length === 0 || badges.length === 0) return;
+
+    console.log('Checking achievements for', tasks.length, 'tasks');
 
     const userStats = {
       totalTasks: tasks.length,
@@ -52,13 +54,19 @@ export const useGamification = (tasks: FrontendTask[], userId: string | null) =>
       daysUsed: calculateDaysUsed(tasks)
     };
 
+    console.log('User stats:', userStats);
+
     const { newBadges, updatedBadges } = BadgeSystem.checkBadges(tasks, userStats, badges);
+    
+    console.log('New badges found:', newBadges.length);
     
     if (newBadges.length > 0) {
       // Filter out already processed achievements
       const unprocessedBadges = newBadges.filter(badge => 
         !processedAchievements.has(badge.badgeId)
       );
+      
+      console.log('Unprocessed badges:', unprocessedBadges.length);
       
       if (unprocessedBadges.length > 0) {
         // Update badges state
@@ -70,6 +78,8 @@ export const useGamification = (tasks: FrontendTask[], userId: string | null) =>
         
         // Mark as processed
         setProcessedAchievements(prev => new Set([...prev, firstBadge.badgeId]));
+        
+        console.log('Badge unlocked:', firstBadge.badgeId);
         
         // Play celebration sound
         playAchievementSound();
