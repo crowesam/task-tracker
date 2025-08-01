@@ -5,7 +5,6 @@ import React from 'react';
 import { Eye, Lock } from 'lucide-react';
 
 interface BadgeProgressBarProps {
-  badgeId: string;
   name: string;
   icon: string;
   current: number;
@@ -16,7 +15,6 @@ interface BadgeProgressBarProps {
 }
 
 const BadgeProgressBar: React.FC<BadgeProgressBarProps> = ({
-  badgeId,
   name,
   icon,
   current,
@@ -130,7 +128,7 @@ const BadgeProgressBar: React.FC<BadgeProgressBarProps> = ({
         <p className={`text-xs italic ${
           isVeryClose ? 'text-red-300' : 'text-white/60'
         }`}>
-          "{getAIMotivation()}"
+          &ldquo;{getAIMotivation()}&rdquo;
         </p>
       </div>
     </div>

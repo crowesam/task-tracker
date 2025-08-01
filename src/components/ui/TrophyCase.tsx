@@ -2,7 +2,7 @@
 'use client'
 
 import React from 'react';
-import { Trophy, Lock, Eye } from 'lucide-react';
+import { Trophy, Lock, Eye, X } from 'lucide-react';
 import { Badge, BADGE_DEFINITIONS } from '@/src/types/badges';
 
 interface TrophyCaseProps {
@@ -62,6 +62,8 @@ const TrophyCase: React.FC<TrophyCaseProps> = ({ badges, isOpen, onClose }) => {
             
             <button
               onClick={onClose}
+              title="Close trophy case"
+              aria-label="Close trophy case"
               className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 
                          flex items-center justify-center text-white transition-all duration-300"
             >

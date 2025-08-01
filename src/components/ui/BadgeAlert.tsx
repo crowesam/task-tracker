@@ -66,11 +66,13 @@ const BadgeAlert: React.FC<BadgeAlertProps> = ({ achievement, onClose, isVisible
               </div>
             </div>
             
-            <button
-              onClick={onClose}
-              className="text-white/70 hover:text-white transition-colors p-1 rounded-full hover:bg-white/10"
+           <button
+            onClick={onClose}
+            className="text-white/70 hover:text-white transition-colors p-1 rounded-full hover:bg-white/10"
+            title="Close"           // ✅ This is the accessibility fix
+             aria-label="Close"      // ✅ Even better - this is what Copilot suggested
             >
-              <X size={16} />
+            <X size={16} />
             </button>
           </div>
 
@@ -83,7 +85,7 @@ const BadgeAlert: React.FC<BadgeAlertProps> = ({ achievement, onClose, isVisible
               </span>
             </div>
             <p className="text-white text-sm italic">
-              "{achievement.aiComment}"
+              &ldquo;{achievement.aiComment}&rdquo;
             </p>
           </div>
 

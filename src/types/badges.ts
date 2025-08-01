@@ -214,11 +214,13 @@ export const AI_COMMENTS = {
   ]
 };
 
+import { FrontendTask } from '@/src/types';
+
 // Badge checking logic
 export class BadgeSystem {
   static checkBadges(
-    tasks: any[], 
-    userStats: any, 
+    tasks: FrontendTask[], 
+    userStats: Record<string, number>, 
     currentBadges: Badge[]
   ): { newBadges: Achievement[], updatedBadges: Badge[] } {
     const newBadges: Achievement[] = [];
@@ -296,7 +298,7 @@ export class BadgeSystem {
       Math.abs(new Date(t.updatedAt).getTime() - now.getTime()) < 3600000 // Within last hour
     );
     
-    if (recentCompletion) {
+    if (recentCompletion && recentCompletion.updatedAt) {
       const hour = new Date(recentCompletion.updatedAt).getHours();
       
       // Midnight Warrior (11 PM - 2 AM)

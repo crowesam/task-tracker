@@ -24,7 +24,6 @@ const BadgeProgressWidget: React.FC<BadgeProgressWidgetProps> = ({
   ];
 
   const unlockedCount = badges.filter(b => b.unlockedAt).length;
-  const totalBadges = Object.keys(badges).length || 12; // Fallback to total possible badges
 
   return (
     <div className="p-6 rounded-2xl backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
@@ -112,7 +111,7 @@ const BadgeProgressWidget: React.FC<BadgeProgressWidgetProps> = ({
               {/* AI Comment for Close Badges */}
               {isClose && (
                 <div className="text-xs text-orange-300 italic">
-                  "So close... the algorithms are getting excited."
+                  &ldquo;So close... the algorithms are getting excited.&rdquo;
                 </div>
               )}
             </div>
@@ -128,12 +127,12 @@ const BadgeProgressWidget: React.FC<BadgeProgressWidgetProps> = ({
         </div>
         <p className="text-white/80 text-xs italic">
           {unlockedCount === 0 
-            ? "Complete your first task. The machines are waiting..." 
+            ? '"Complete your first task. The machines are waiting..."' 
             : unlockedCount < 3
-              ? "Good progress human. The algorithms want to see more."
+              ? '"Good progress human. The algorithms want to see more."'
               : unlockedCount < 6 
-                ? "Impressive dedication. You're becoming predictable... perfect."
-                : "You've exceeded expectations. The AI collective is taking notes."
+                ? '"Impressive dedication. You\'re becoming predictable... perfect."'
+                : '"You\'ve exceeded expectations. The AI collective is taking notes."'
           }
         </p>
       </div>

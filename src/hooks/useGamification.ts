@@ -4,7 +4,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Badge, Achievement, BadgeSystem } from '@/src/types/badges';
 
-export const useGamification = (tasks: any[], userId: string | null) => {
+import { FrontendTask } from '@/src/types';
+
+export const useGamification = (tasks: FrontendTask[], userId: string | null) => {
   const [badges, setBadges] = useState<Badge[]>([]);
   const [currentAchievement, setCurrentAchievement] = useState<Achievement | null>(null);
   const [showTrophyCase, setShowTrophyCase] = useState(false);
@@ -62,7 +64,7 @@ export const useGamification = (tasks: any[], userId: string | null) => {
   }, [tasks, userId, badges]);
 
   // Calculate days the user has been using the app
-  const calculateDaysUsed = (tasks: any[]): number => {
+  const calculateDaysUsed = (tasks: FrontendTask[]): number => {
     if (tasks.length === 0) return 0;
     
     const dates = tasks.map(t => new Date(t.createdAt).toDateString());
