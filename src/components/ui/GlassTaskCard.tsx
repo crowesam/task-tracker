@@ -74,8 +74,14 @@ const GlassTaskCard: React.FC<GlassTaskCardProps> = ({ task, onToggle, onDelete,
 
       {/* Header with Category and Completion Button */}
       <div className="flex items-center justify-between p-6 pb-4">
-        <div className="text-orange-500 font-bold text-sm tracking-wider uppercase">
-          {task.category || 'CATEGORY'}
+        {/* Beautiful Green Category Badge */}
+        <div className="inline-block px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 
+                        rounded-lg shadow-lg transform transition-all duration-300 
+                        hover:scale-105 hover:shadow-xl hover:shadow-emerald-500/25">
+          <span className="text-white font-bold text-sm tracking-wider uppercase 
+                          drop-shadow-[1px_1px_2px_rgba(0,0,0,0.8)]">
+            {task.category || 'CATEGORY'}
+          </span>
         </div>
         
         {/* Animated Checkbox */}
