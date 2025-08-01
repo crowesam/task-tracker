@@ -23,6 +23,157 @@ interface TaskFormProps {
   onCancel: () => void;
 }
 
+// Move FormInput component OUTSIDE the main component
+const FormInput = ({ 
+  label, 
+  value, 
+  onChange, 
+  placeholder, 
+  type = 'text',
+  icon: Icon,
+  error,
+  fieldName,
+  maxLength,
+  focusedField,
+  onFocus,
+  onBlur,
+  ...props 
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  type?: string;
+  icon?: React.ComponentType<{ className?: string }>;
+  error?: string;
+  fieldName: string;
+  maxLength?: number;
+  focusedField: string | null;
+  onFocus: (fieldName: string) => void;
+  onBlur: () => void;
+}) => (
+  <div className="space-y-3 mb-6">
+    <label className="block text-black font-semibold text-sm tracking-wide uppercase">
+      {label}
+    </label>
+    
+    <div 
+      className={`
+        relative flex items-center border-2 transition-all duration-300
+        ${focusedField === fieldName
+          ? 'border-orange-500 shadow-lg shadow-orange-500/20 scale-[1.01]' 
+          : error 
+            ? 'border-red-500'
+            : 'border-gray-300 hover:border-gray-400'
+        }
+      `}
+      style={{ 
+        borderRadius: '12px',
+        background: 'rgba(255, 255, 255, 0.7)',
+        backdropFilter: 'blur(8px)'
+      }}
+    >
+      {Icon && fieldName !== 'title' && (
+        <Icon className="w-5 h-5 text-gray-400 ml-4 flex-shrink-0" />
+      )}
+      
+      <input
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onFocus={() => onFocus(fieldName)}
+        onBlur={onBlur}
+        placeholder={placeholder}
+        maxLength={maxLength}
+        className={`
+          flex-1 px-4 py-3 bg-transparent text-gray-700 placeholder-gray-400
+          focus:outline-none text-sm font-medium
+          ${Icon && fieldName !== 'title' ? 'pl-2' : ''}
+        `}
+        style={{ borderRadius: '12px' }}
+        {...props}
+      />
+    </div>
+    
+    {error && (
+      <p className="text-red-500 text-xs mt-2 flex items-center gap-1">
+        <span className="w-1 h-1 bg-red-500 rounded-full"></span>
+        {error}
+      </p>
+    )}
+  </div>
+);
+
+// Move FormTextarea component OUTSIDE the main component
+const FormTextarea = ({ 
+  label, 
+  value, 
+  onChange, 
+  placeholder, 
+  error,
+  fieldName,
+  maxLength,
+  rows = 3,
+  focusedField,
+  onFocus,
+  onBlur
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  error?: string;
+  fieldName: string;
+  maxLength?: number;
+  rows?: number;
+  focusedField: string | null;
+  onFocus: (fieldName: string) => void;
+  onBlur: () => void;
+}) => (
+  <div className="space-y-3 mb-6">
+    <label className="block text-black font-semibold text-sm tracking-wide uppercase">
+      {label}
+    </label>
+    
+    <div 
+      className={`
+        relative border-2 transition-all duration-300
+        ${focusedField === fieldName
+          ? 'border-orange-500 shadow-lg shadow-orange-500/20 scale-[1.01]' 
+          : error 
+            ? 'border-red-500'
+            : 'border-gray-300 hover:border-gray-400'
+        }
+      `}
+      style={{ 
+        borderRadius: '12px',
+        background: 'rgba(255, 255, 255, 0.7)',
+        backdropFilter: 'blur(8px)'
+      }}
+    >
+      <textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onFocus={() => onFocus(fieldName)}
+        onBlur={onBlur}
+        placeholder={placeholder}
+        maxLength={maxLength}
+        rows={rows}
+        className="w-full px-4 py-3 bg-transparent text-gray-700 placeholder-gray-400
+                   focus:outline-none text-sm font-medium resize-none"
+        style={{ borderRadius: '12px' }}
+      />
+    </div>
+    
+    {error && (
+      <p className="text-red-500 text-xs mt-2 flex items-center gap-1">
+        <span className="w-1 h-1 bg-red-500 rounded-full"></span>
+        {error}
+      </p>
+    )}
+  </div>
+);
+
 const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
   // Form state
   const [title, setTitle] = useState(task?.text || '');
@@ -86,145 +237,6 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
     onSubmit(taskData);
   };
 
-  // Enhanced input component - REMOVED live character counter
-  const FormInput = ({ 
-    label, 
-    value, 
-    onChange, 
-    placeholder, 
-    type = 'text',
-    icon: Icon,
-    error,
-    fieldName,
-    maxLength,
-    ...props 
-  }: {
-    label: string;
-    value: string;
-    onChange: (value: string) => void;
-    placeholder?: string;
-    type?: string;
-    icon?: React.ComponentType<{ className?: string }>;
-    error?: string;
-    fieldName: string;
-    maxLength?: number;
-  }) => (
-    <div className="space-y-3 mb-6">
-      <label className="block text-black font-semibold text-sm tracking-wide uppercase">
-        {label}
-      </label>
-      
-      <div 
-        className={`
-          relative flex items-center border-2 transition-all duration-300
-          ${focusedField === fieldName
-            ? 'border-orange-500 shadow-lg shadow-orange-500/20 scale-[1.01]' 
-            : error 
-              ? 'border-red-500'
-              : 'border-gray-300 hover:border-gray-400'
-          }
-        `}
-        style={{ 
-          borderRadius: '12px',
-          background: 'rgba(255, 255, 255, 0.7)',
-          backdropFilter: 'blur(8px)'
-        }}
-      >
-        {Icon && fieldName !== 'title' && (
-          <Icon className="w-5 h-5 text-gray-400 ml-4 flex-shrink-0" />
-        )}
-        
-        <input
-          type={type}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          onFocus={() => setFocusedField(fieldName)}
-          onBlur={() => setFocusedField(null)}
-          placeholder={placeholder}
-          maxLength={maxLength}
-          className={`
-            flex-1 px-4 py-3 bg-transparent text-gray-700 placeholder-gray-400
-            focus:outline-none text-sm font-medium
-            ${Icon && fieldName !== 'title' ? 'pl-2' : ''}
-          `}
-          style={{ borderRadius: '12px' }}
-          {...props}
-        />
-      </div>
-      
-      {error && (
-        <p className="text-red-500 text-xs mt-2 flex items-center gap-1">
-          <span className="w-1 h-1 bg-red-500 rounded-full"></span>
-          {error}
-        </p>
-      )}
-    </div>
-  );
-
-  // Enhanced textarea component - REMOVED live character counter
-  const FormTextarea = ({ 
-    label, 
-    value, 
-    onChange, 
-    placeholder, 
-    error,
-    fieldName,
-    maxLength,
-    rows = 3 
-  }: {
-    label: string;
-    value: string;
-    onChange: (value: string) => void;
-    placeholder?: string;
-    error?: string;
-    fieldName: string;
-    maxLength?: number;
-    rows?: number;
-  }) => (
-    <div className="space-y-3 mb-6">
-      <label className="block text-black font-semibold text-sm tracking-wide uppercase">
-        {label}
-      </label>
-      
-      <div 
-        className={`
-          relative border-2 transition-all duration-300
-          ${focusedField === fieldName
-            ? 'border-orange-500 shadow-lg shadow-orange-500/20 scale-[1.01]' 
-            : error 
-              ? 'border-red-500'
-              : 'border-gray-300 hover:border-gray-400'
-          }
-        `}
-        style={{ 
-          borderRadius: '12px',
-          background: 'rgba(255, 255, 255, 0.7)',
-          backdropFilter: 'blur(8px)'
-        }}
-      >
-        <textarea
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          onFocus={() => setFocusedField(fieldName)}
-          onBlur={() => setFocusedField(null)}
-          placeholder={placeholder}
-          maxLength={maxLength}
-          rows={rows}
-          className="w-full px-4 py-3 bg-transparent text-gray-700 placeholder-gray-400
-                     focus:outline-none text-sm font-medium resize-none"
-          style={{ borderRadius: '12px' }}
-        />
-      </div>
-      
-      {error && (
-        <p className="text-red-500 text-xs mt-2 flex items-center gap-1">
-          <span className="w-1 h-1 bg-red-500 rounded-full"></span>
-          {error}
-        </p>
-      )}
-    </div>
-  );
-
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Task Title */}
@@ -236,6 +248,9 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
         error={errors.title}
         fieldName="title"
         maxLength={100}
+        focusedField={focusedField}
+        onFocus={setFocusedField}
+        onBlur={() => setFocusedField(null)}
       />
 
       {/* Task Description */}
@@ -248,6 +263,9 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
         fieldName="description"
         maxLength={500}
         rows={4}
+        focusedField={focusedField}
+        onFocus={setFocusedField}
+        onBlur={() => setFocusedField(null)}
       />
 
       {/* Category and Due Date Row */}
@@ -262,6 +280,9 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
           error={errors.category}
           fieldName="category"
           maxLength={20}
+          focusedField={focusedField}
+          onFocus={setFocusedField}
+          onBlur={() => setFocusedField(null)}
         />
 
         {/* Due Date */}
@@ -272,6 +293,9 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
           type="date"
           icon={Calendar}
           fieldName="dueDate"
+          focusedField={focusedField}
+          onFocus={setFocusedField}
+          onBlur={() => setFocusedField(null)}
         />
       </div>
 
