@@ -4,6 +4,7 @@ import { SignUp } from '@stackframe/stack';
 
 export default function SignUpPage() {
   return (
+  <>
     <div className="min-h-screen bg-gradient-to-br from-teal-800 via-teal-700 to-teal-900 flex items-center justify-center p-6">
       <div className="w-full max-w-md p-8 rounded-2xl backdrop-blur-md border border-white/20 bg-white/10">
         <div className="text-center mb-6">
@@ -21,21 +22,22 @@ export default function SignUpPage() {
               Sign in
             </a>
           </p>
-          
-      </div>
-           <div className="text-center mt-4">
-        <p className="text-white/50 text-xs">
-          By signing in, you agree to our{' '}
-          <a href="/terms-of-service" className="text-orange-400 hover:underline">
-            Terms of Service
-          </a>{' '}
-          and{' '}
-          <a href="/privacy-policy" className="text-orange-400 hover:underline">
-            Privacy Policy
-          </a>.
-        </p>
-         
+        </div>
+        
+        <div className="text-center mt-4">
+          <p className="text-white/50 text-xs">
+            By signing in, you agree to our{' '}
+            <a href="/terms-of-service" className="text-orange-400 hover:underline">
+              Terms of Service
+            </a>{' '}
+            and{' '}
+            <a href="/privacy-policy" className="text-orange-400 hover:underline">
+              Privacy Policy
+            </a>.
+          </p>
+        </div>
       </div>
     </div>
+  </>
   );
 }
