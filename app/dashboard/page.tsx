@@ -200,7 +200,7 @@ export default function Dashboard() {
               <h1 className="text-2xl font-bold bg-gradient-to-r from-orange-400 to-orange-500 bg-clip-text text-transparent">
                 Medilios
               </h1>
-              <p className="text-white/70 text-sm">Task Dashboard</p>
+              <p className="text-white/70 text-sm">by Sam Crowe</p>
             </div>
           </div>
 
