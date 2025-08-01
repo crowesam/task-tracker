@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { Header } from '@/src/components/layout/Header';
 import { FrontendTask } from '@/src/types';
 import { combineClasses } from '@/src/utils';
-import { Sparkles, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
+import {  CheckCircle, Clock, AlertTriangle } from 'lucide-react';
 import TaskGrid from '@/src/components/ui/TaskGrid';
 import TaskForm from '@/src/components/ui/TaskForm';
 import AddTaskButton from '@/src/components/ui/AddTaskButton';
@@ -190,8 +190,8 @@ export default function Dashboard() {
               <Image
                 src="/logo.png"
                 alt="Medilios"
-                width={32}
-                height={32}
+                width={60}
+                height={60}
                 className="w-8 h-8 object-contain"
                 priority
               />

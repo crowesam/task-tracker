@@ -58,8 +58,8 @@ export default function LandingPage() {
             <Image
               src="/logo.png"
               alt="Medilios"
-              width={40}
-              height={40}
+              width={60}
+              height={60}
               className="h-10 w-auto"
               priority
             />
