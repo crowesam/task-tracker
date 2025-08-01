@@ -2,20 +2,25 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 // import { useUser } from '@stackframe/stack';
 import { 
   CheckCircle, 
-  Users, 
-  Zap,
+  Filter, 
+  Palette,
   ArrowRight,
   Sparkles,
   Moon,
-  Sun
+  Sun,
+  Clock,
+  AlertTriangle,
+  Tag,
+  Calendar,
+  Eye
 } from 'lucide-react';
 
 export default function LandingPage() {
   const [darkMode, setDarkMode] = useState(false);
-
 
   // Load theme preference
   useEffect(() => {
@@ -29,8 +34,6 @@ export default function LandingPage() {
   useEffect(() => {
     localStorage.setItem('darkMode', JSON.stringify(darkMode));
   }, [darkMode]);
-
- 
 
   const playSound = (type: string) => {
     try {
@@ -52,9 +55,14 @@ export default function LandingPage() {
       <nav className="relative z-10 p-6">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center">
-              <Sparkles className="w-6 h-6 text-white" />
-            </div>
+            <Image
+              src="/logo.svg"
+              alt="Medilios"
+              width={40}
+              height={40}
+              className="h-10 w-auto"
+              priority
+            />
             <h1 className="text-2xl font-bold bg-gradient-to-r from-orange-400 to-orange-500 bg-clip-text text-transparent">
               Medilios
             </h1>
@@ -113,8 +121,8 @@ export default function LandingPage() {
           </h1>
           
           <p className="text-xl md:text-2xl text-white/80 mb-12 max-w-3xl mx-auto leading-relaxed">
-            Experience the future of productivity with our stunning glassmorphism interface. 
-            Collaborate seamlessly, track progress beautifully, and achieve more together.
+            Organize your life with stunning glassmorphism task cards, priority filtering, 
+            and a clean interface that actually helps you get things done.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -130,7 +138,7 @@ export default function LandingPage() {
             </Link>
             
             <Link 
-              href="/demo" 
+              href="/dashboard" 
               className={`px-8 py-4 rounded-full backdrop-blur-md transition-all duration-300 hover:scale-105 
                          border font-semibold text-lg ${
                 darkMode
@@ -139,7 +147,7 @@ export default function LandingPage() {
               }`}
               onClick={() => playSound('click')}
             >
-              View Demo
+              Try Demo
             </Link>
           </div>
         </div>
@@ -149,18 +157,18 @@ export default function LandingPage() {
           {[
             {
               icon: CheckCircle,
-              title: "Smart Task Management",
-              description: "Organize tasks with priority indicators, due date tracking, and beautiful glassmorphism cards"
+              title: "Smart Task Organization",
+              description: "Create, edit, and organize tasks with priority levels, due dates, and custom categories"
             },
             {
-              icon: Users,
-              title: "Team Collaboration",
-              description: "Share tasks, assign accountability partners, and receive real-time email notifications"
+              icon: Filter,
+              title: "Interactive Filtering",
+              description: "Click your stats cards to filter by completed, in-progress, or high-priority tasks instantly"
             },
             {
-              icon: Zap,
-              title: "Lightning Fast",
-              description: "Built with Next.js 15 and Turbopack for instant interactions and smooth animations"
+              icon: Palette,
+              title: "Glassmorphism Design",
+              description: "Beautiful, modern interface with smooth transitions and a responsive design that works everywhere"
             }
           ].map((feature, index) => (
             <div
@@ -188,27 +196,27 @@ export default function LandingPage() {
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-24">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Everything you need to 
+            What Medilios actually
             <span className="block bg-gradient-to-r from-orange-400 to-orange-500 bg-clip-text text-transparent">
-              stay organized
+              does for you
             </span>
           </h2>
           <p className="text-xl text-white/70 max-w-2xl mx-auto">
-            From simple task tracking to advanced team collaboration, 
-            we&apos;ve got all the features you need.
+            No AI hype, no blockchain nonsense. Just solid task management 
+            features that work beautifully.
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
-            { icon: "🎨", title: "Glassmorphism UI", description: "Beautiful, modern interface" },
-            { icon: "🚀", title: "Drag & Drop", description: "Intuitive task reordering" },
-            { icon: "🔔", title: "Smart Notifications", description: "Email reminders & updates" },
-            { icon: "🌙", title: "Dark Mode", description: "Easy on the eyes" },
-            { icon: "📱", title: "Responsive Design", description: "Perfect on any device" },
-            { icon: "⚡", title: "Real-time Sync", description: "Instant updates everywhere" },
-            { icon: "🔒", title: "Secure Auth", description: "Enterprise-grade security" },
-            { icon: "🎵", title: "Sound Effects", description: "Delightful audio feedback" }
+            { icon: <CheckCircle className="w-8 h-8" />, title: "Task Creation & Editing", description: "Rich forms with validation" },
+            { icon: <AlertTriangle className="w-8 h-8" />, title: "Priority Levels", description: "High, medium, low organization" },
+            { icon: <Filter className="w-8 h-8" />, title: "Smart Filtering", description: "Click stats to filter tasks" },
+            { icon: <Calendar className="w-8 h-8" />, title: "Due Date Tracking", description: "Never miss a deadline" },
+            { icon: <Tag className="w-8 h-8" />, title: "Category & Tags", description: "Organize your way" },
+            { icon: <Moon className="w-8 h-8" />, title: "Dark/Light Modes", description: "Easy on the eyes" },
+            { icon: <Clock className="w-8 h-8" />, title: "Real-time Stats", description: "Live task counters" },
+            { icon: <Sparkles className="w-8 h-8" />, title: "Beautiful UI", description: "Glassmorphism design" }
           ].map((feature, index) => (
             <div
               key={index}
@@ -218,7 +226,7 @@ export default function LandingPage() {
                   : 'bg-white/15 border-white/20 hover:bg-white/25'
               }`}
             >
-              <div className="text-3xl mb-3">{feature.icon}</div>
+              <div className="text-orange-400 mb-3">{feature.icon}</div>
               <h4 className="font-semibold text-white mb-2">{feature.title}</h4>
               <p className="text-sm text-white/60">{feature.description}</p>
             </div>
@@ -234,14 +242,14 @@ export default function LandingPage() {
             : 'bg-white/20 border-white/30'
         }`}>
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Ready to transform your
+            Ready to organize your
             <span className="block bg-gradient-to-r from-orange-400 to-orange-500 bg-clip-text text-transparent">
-              productivity?
+              life beautifully?
             </span>
           </h2>
           <p className="text-xl text-white/70 mb-8 max-w-2xl mx-auto">
-            Join thousands of users who have revolutionized their task management 
-            with our beautiful, intuitive platform.
+            Join the users who have discovered that sometimes the best productivity tool 
+            is just a really well-designed task manager.
           </p>
           <Link 
             href="/sign-up"
@@ -253,6 +261,49 @@ export default function LandingPage() {
             Get Started Free
             <ArrowRight size={20} />
           </Link>
+        </div>
+      </div>
+
+      {/* Ominous Feature Section */}
+      <div className="relative z-10 py-20 bg-gradient-to-b from-transparent to-black/50">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <div className="mb-8">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <Eye className="w-6 h-6 text-red-400 animate-pulse" />
+              <h3 className="text-2xl font-bold text-red-400">
+                🔮 Advanced Feature (Beta)
+              </h3>
+              <Eye className="w-6 h-6 text-red-400 animate-pulse" />
+            </div>
+            <p className="text-gray-300 text-lg mb-2">
+              Our AI now monitors your task completion patterns and judges your life choices.
+            </p>
+            <p className="text-gray-400 text-base mb-4">
+              Based on your procrastination habits, Medilios can predict your future with 87% accuracy.
+            </p>
+            <p className="text-red-400 text-sm font-semibold">
+              * Feature may result in existential dread. Use responsibly.
+            </p>
+          </div>
+          
+          <div className={`p-6 rounded-xl backdrop-blur-md border mx-auto max-w-2xl ${
+            darkMode 
+              ? 'bg-red-950/20 border-red-500/30' 
+              : 'bg-red-900/20 border-red-400/30'
+          }`}>
+            <p className="text-gray-300 text-sm italic">
+              "I started using Medilios to organize my tasks. Now it knows I haven't 
+              called my mom in three weeks and keeps creating tasks that just say 
+              'CALL MOM' in increasingly aggressive fonts."
+            </p>
+            <p className="text-gray-500 text-xs mt-2">— Anonymous Beta Tester</p>
+          </div>
+          
+          <div className="text-xs text-gray-600 mt-6 max-w-lg mx-auto">
+            Side effects may include: increased productivity, sudden urge to organize everything, 
+            the unsettling feeling that your tasks are watching you back, and an inexplicable 
+            desire to complete that project from 2019.
+          </div>
         </div>
       </div>
 
@@ -269,10 +320,10 @@ export default function LandingPage() {
               </span>
             </div>
             <p className="text-white/60 mb-4">
-              Beautiful task management for modern teams
+              Beautiful task management that actually works
             </p>
             <p className="text-white/40 text-sm">
-              © 2025 The Creative Crowe,LLC. All rights reserved.
+              © 2025 The Creative Crowe, LLC. All rights reserved.
             </p>
           </div>
         </div>
