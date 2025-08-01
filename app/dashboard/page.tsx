@@ -8,18 +8,12 @@ import { useRouter } from 'next/navigation';
 import { Header } from '@/src/components/layout/Header';
 import { FrontendTask } from '@/src/types';
 import { combineClasses } from '@/src/utils';
-import {  CheckCircle, Clock, AlertTriangle } from 'lucide-react';
+import { CheckCircle, Clock, AlertTriangle } from 'lucide-react';
 import TaskGrid from '@/src/components/ui/TaskGrid';
 import TaskForm from '@/src/components/ui/TaskForm';
 import AddTaskButton from '@/src/components/ui/AddTaskButton';
 import TaskModal from '@/src/components/ui/TaskModal';
-import Image from 'next/image'; 
-import TrophyCaseButton from '@/src/components/ui/TrophyCaseButton';
-import TrophyCase from '@/src/components/ui/TrophyCase';
-import BadgeAlert from '@/src/components/ui/BadgeAlert';
-import BadgeProgressWidget from '@/src/components/ui/BadgeProgressWidget';
-import { useGamification } from '@/src/hooks/useGamification';
-
+import Image from 'next/image'; // ✅ Add this import
 
 type FilterType = 'all' | 'completed' | 'inProgress' | 'highPriority';
 
@@ -34,21 +28,6 @@ export default function Dashboard() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<FrontendTask | null>(null);
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
-  const {
-  badges,
-  currentAchievement,
-  showTrophyCase,
-  unlockedBadgeCount,
-  setShowTrophyCase,
-  closeAchievementAlert,
-  getBadgeProgress,
-  checkAchievements
-} = useGamification(tasks, user?.id || null);
-
-// Trigger achievement check when tasks change
-useEffect(() => {
-  checkAchievements();
-}, [checkAchievements]);
 
   // Load theme preference
   useEffect(() => {
@@ -166,7 +145,7 @@ useEffect(() => {
         'min-h-screen transition-all duration-500 flex items-center justify-center',
         darkMode 
           ? 'bg-gradient-to-br from-slate-900 via-teal-900 to-slate-900' 
-          : 'bg-gradient-to-br from-yellow-400 via-green-400 via-teal-500 to-purple-600'
+          : 'bg-gradient-to-br from-teal-600 via-teal-700 to-teal-800'
       )}>
         <div className="text-white text-xl">Loading...</div>
       </div>
@@ -198,7 +177,7 @@ useEffect(() => {
       'min-h-screen transition-all duration-500',
       darkMode 
         ? 'bg-gradient-to-br from-slate-900 via-teal-900 to-slate-900' 
-        : 'bg-gradient-to-br from-yellow-400 via-green-400 via-teal-500 to-purple-600'
+        : 'bg-gradient-to-br from-teal-600 via-teal-700 to-teal-800'
     )}> 
       {/* Background Effects */}
       <BackgroundEffects darkMode={darkMode} variant="enhanced" animated={true} />
@@ -211,8 +190,8 @@ useEffect(() => {
               <Image
                 src="/logo.png"
                 alt="Medilios"
-                width={60}
-                height={60}
+                width={32}
+                height={32}
                 className="w-8 h-8 object-contain"
                 priority
               />
@@ -221,7 +200,7 @@ useEffect(() => {
               <h1 className="text-2xl font-bold bg-gradient-to-r from-orange-400 to-orange-500 bg-clip-text text-transparent">
                 Medilios
               </h1>
-              <p className="text-white/70 text-sm">by Sam Crowe</p>
+              <p className="text-white/70 text-sm">Task Dashboard</p>
             </div>
           </div>
 
@@ -350,26 +329,12 @@ useEffect(() => {
           </button>
         </div>
 
-       {/* Badge Progress Section */}
-        <div className="mb-12">
-             <BadgeProgressWidget
-             badges={badges}
-             getBadgeProgress={getBadgeProgress}
-             onOpenTrophyCase={() => setShowTrophyCase(true)}
-              />
+        {/* Add Task Button */}
+        <div className="flex justify-center mb-12">
+          <AddTaskButton 
+            onClick={() => setIsCreateModalOpen(true)}
+          />
         </div>
-
-       {/* Action Buttons */}
-       <div className="flex justify-center items-center gap-6 mb-12">
-             <TrophyCaseButton
-             onClick={() => setShowTrophyCase(true)}
-              badgeCount={unlockedBadgeCount}
-              />
-  
-             <AddTaskButton 
-              onClick={() => setIsCreateModalOpen(true)}
-              />
-       </div>
 
         {/* Task Grid */}
         <TaskGrid
@@ -405,20 +370,6 @@ useEffect(() => {
                 Show All Tasks
               </button>
             )}
-            {/* Trophy Case Modal */}
-            <TrophyCase
-              badges={badges}
-              isOpen={showTrophyCase}
-              onClose={() => setShowTrophyCase(false)}
-            />  
-            {/* Achievement Alert */}
-            {currentAchievement && (
-            <BadgeAlert
-             achievement={currentAchievement}
-             onClose={closeAchievementAlert}
-             isVisible={!!currentAchievement}
-             />
-    )}            
           </div>
         )}
 
