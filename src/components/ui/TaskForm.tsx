@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Calendar, FileText, Type } from 'lucide-react';
+import { Calendar, FileText } from 'lucide-react';
 import PrioritySelector from './PrioritySelector';
 import TagInput from './TagInput';
 
