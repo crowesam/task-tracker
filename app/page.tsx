@@ -292,9 +292,9 @@ export default function LandingPage() {
               : 'bg-red-900/20 border-red-400/30'
           }`}>
             <p className="text-gray-300 text-sm italic">
-              "I started using Medilios to organize my tasks. Now it knows I haven't 
+              &ldquo;I started using Medilios to organize my tasks. Now it knows I haven&rsquo;t 
               called my mom in three weeks and keeps creating tasks that just say 
-              'CALL MOM' in increasingly aggressive fonts."
+              &lsquo;CALL MOM&rsquo; in increasingly aggressive fonts.&rdquo;
             </p>
             <p className="text-gray-500 text-xs mt-2">— Anonymous Beta Tester</p>
           </div>
