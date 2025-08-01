@@ -33,6 +33,9 @@ export const useGamification = (tasks: FrontendTask[], userId: string | null) =>
     }
   }, [badges, userId]);
 
+  // Track processed achievements to prevent duplicates
+  const [processedAchievements, setProcessedAchievements] = useState<Set<string>>(new Set());
+
   // Check for new achievements when tasks change
   const checkAchievements = useCallback(() => {
     if (!userId || tasks.length === 0) return;
@@ -52,16 +55,27 @@ export const useGamification = (tasks: FrontendTask[], userId: string | null) =>
     const { newBadges, updatedBadges } = BadgeSystem.checkBadges(tasks, userStats, badges);
     
     if (newBadges.length > 0) {
-      // Update badges state
-      setBadges(updatedBadges);
+      // Filter out already processed achievements
+      const unprocessedBadges = newBadges.filter(badge => 
+        !processedAchievements.has(badge.badgeId)
+      );
       
-      // Show achievement alert for the first new badge
-      setCurrentAchievement(newBadges[0]);
-      
-      // Play celebration sound
-      playAchievementSound();
+      if (unprocessedBadges.length > 0) {
+        // Update badges state
+        setBadges(updatedBadges);
+        
+        // Show achievement alert for the first new badge only
+        const firstBadge = unprocessedBadges[0];
+        setCurrentAchievement(firstBadge);
+        
+        // Mark as processed
+        setProcessedAchievements(prev => new Set([...prev, firstBadge.badgeId]));
+        
+        // Play celebration sound
+        playAchievementSound();
+      }
     }
-  }, [tasks, userId, badges]);
+  }, [tasks, userId, badges, processedAchievements]);
 
   // Calculate days the user has been using the app
   const calculateDaysUsed = (tasks: FrontendTask[]): number => {
@@ -88,7 +102,7 @@ export const useGamification = (tasks: FrontendTask[], userId: string | null) =>
     checkAchievements();
   }, [checkAchievements]);
 
-  // Close achievement alert
+  // Close achievement alert and prevent re-triggering
   const closeAchievementAlert = () => {
     setCurrentAchievement(null);
   };

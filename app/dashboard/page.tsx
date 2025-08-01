@@ -95,10 +95,23 @@ export default function Dashboard() {
     }
   }, [tasks, user]);
 
-  // Trigger achievement check when tasks change - CRITICAL FOR GAMIFICATION!
+  // Calculate stats (moved up to avoid scope issues)
+  const completedTasks = tasks.filter(t => t.completed).length;
+  const inProgressTasks = tasks.filter(t => !t.completed).length;
+  const highPriorityTasks = tasks.filter(t => t.priority === 'high' && !t.completed).length;
+
+  // Trigger achievement check when tasks change - CONTROLLED
   useEffect(() => {
-    checkAchievements();
-  }, [checkAchievements]);
+    // Only check achievements if we have tasks and user
+    if (tasks.length > 0 && user?.id) {
+      // Debounce achievement checking to prevent rapid firing
+      const timeoutId = setTimeout(() => {
+        checkAchievements();
+      }, 500);
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [tasks.length, completedTasks, user?.id, checkAchievements]);
 
   // Task operations
   const handleToggleTask = (id: string) => {
@@ -174,10 +187,6 @@ export default function Dashboard() {
     );
   }
 
-  // Calculate stats
-  const completedTasks = tasks.filter(t => t.completed).length;
-  const inProgressTasks = tasks.filter(t => !t.completed).length;
-  const highPriorityTasks = tasks.filter(t => t.priority === 'high' && !t.completed).length;
   const filteredTasks = getFilteredTasks();
 
   // Get filter title for display
