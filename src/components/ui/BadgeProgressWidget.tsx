@@ -93,10 +93,10 @@ const BadgeProgressWidget: React.FC<BadgeProgressWidgetProps> = ({
                   <div 
                     className={`h-full transition-all duration-500 ease-out ${
                       isUnlocked 
-                        ? 'bg-gradient-to-r from-yellow-400 to-yellow-500' 
+                        ? 'bg-gradient-to-r from-green-500 to-green-600' // Green like completion circle!
                         : isClose
-                          ? 'bg-gradient-to-r from-orange-400 to-orange-500 animate-pulse'
-                          : 'bg-gradient-to-r from-gray-500 to-gray-400'
+                          ? 'bg-gradient-to-r from-green-400 to-green-500 animate-pulse' // Excited green
+                          : 'bg-gradient-to-r from-teal-500 to-teal-600' // Teal progress
                     }`}
                     style={{ width: `${percentage}%` }}
                   />
@@ -104,13 +104,13 @@ const BadgeProgressWidget: React.FC<BadgeProgressWidgetProps> = ({
                 
                 {/* Close to completion indicator */}
                 {isClose && (
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-orange-400 rounded-full animate-ping" />
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-ping" />
                 )}
               </div>
 
               {/* AI Comment for Close Badges */}
               {isClose && (
-                <div className="text-xs text-orange-300 italic">
+                <div className="text-xs text-green-300 italic">
                   &ldquo;So close... the algorithms are getting excited.&rdquo;
                 </div>
               )}
