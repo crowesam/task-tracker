@@ -13,7 +13,13 @@ import TaskGrid from '@/src/components/ui/TaskGrid';
 import TaskForm from '@/src/components/ui/TaskForm';
 import AddTaskButton from '@/src/components/ui/AddTaskButton';
 import TaskModal from '@/src/components/ui/TaskModal';
-import Image from 'next/image'; // ✅ Add this import
+import Image from 'next/image'; 
+import TrophyCaseButton from '@/src/components/ui/TrophyCaseButton';
+import TrophyCase from '@/src/components/ui/TrophyCase';
+import BadgeAlert from '@/src/components/ui/BadgeAlert';
+import BadgeProgressWidget from '@/src/components/ui/BadgeProgressWidget';
+import { useGamification } from '@/src/hooks/useGamification';
+
 
 type FilterType = 'all' | 'completed' | 'inProgress' | 'highPriority';
 
@@ -28,6 +34,21 @@ export default function Dashboard() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<FrontendTask | null>(null);
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
+  const {
+  badges,
+  currentAchievement,
+  showTrophyCase,
+  unlockedBadgeCount,
+  setShowTrophyCase,
+  closeAchievementAlert,
+  getBadgeProgress,
+  checkAchievements
+} = useGamification(tasks, user?.id || null);
+
+// Trigger achievement check when tasks change
+useEffect(() => {
+  checkAchievements();
+}, [checkAchievements]);
 
   // Load theme preference
   useEffect(() => {
@@ -329,12 +350,26 @@ export default function Dashboard() {
           </button>
         </div>
 
-        {/* Add Task Button */}
-        <div className="flex justify-center mb-12">
-          <AddTaskButton 
-            onClick={() => setIsCreateModalOpen(true)}
-          />
+       {/* Badge Progress Section */}
+        <div className="mb-12">
+             <BadgeProgressWidget
+             badges={badges}
+             getBadgeProgress={getBadgeProgress}
+             onOpenTrophyCase={() => setShowTrophyCase(true)}
+              />
         </div>
+
+       {/* Action Buttons */}
+       <div className="flex justify-center items-center gap-6 mb-12">
+             <TrophyCaseButton
+             onClick={() => setShowTrophyCase(true)}
+              badgeCount={unlockedBadgeCount}
+              />
+  
+             <AddTaskButton 
+              onClick={() => setIsCreateModalOpen(true)}
+              />
+       </div>
 
         {/* Task Grid */}
         <TaskGrid
@@ -370,6 +405,20 @@ export default function Dashboard() {
                 Show All Tasks
               </button>
             )}
+            {/* Trophy Case Modal */}
+            <TrophyCase
+              badges={badges}
+              isOpen={showTrophyCase}
+              onClose={() => setShowTrophyCase(false)}
+            />  
+            {/* Achievement Alert */}
+            {currentAchievement && (
+            <BadgeAlert
+             achievement={currentAchievement}
+             onClose={closeAchievementAlert}
+             isVisible={!!currentAchievement}
+             />
+    )}            
           </div>
         )}
 
