@@ -1,4 +1,4 @@
-// app/dashboard/page.tsx - LINTER FIXED VERSION
+// app/dashboard/page.tsx - Interactive Filter Cards
 'use client'
 
 import { BackgroundEffects } from '@/src/components/layout/BackgroundEffects';
@@ -12,11 +12,11 @@ import { Sparkles, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
 import TaskGrid from '@/src/components/ui/TaskGrid';
 import TaskForm from '@/src/components/ui/TaskForm';
 import AddTaskButton from '@/src/components/ui/AddTaskButton';
-import FiltersButton from '@/src/components/ui/FiltersButton';
-import CollaborationButton from '@/src/components/ui/CollaborationButton';
 import TaskModal from '@/src/components/ui/TaskModal';
- 
-export default function Dashboard() { // FIXED: Added space
+
+type FilterType = 'all' | 'completed' | 'inProgress' | 'highPriority';
+
+export default function Dashboard() {
   const user = useUser();
   const router = useRouter();
   
@@ -26,6 +26,7 @@ export default function Dashboard() { // FIXED: Added space
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<FrontendTask | null>(null);
+  const [activeFilter, setActiveFilter] = useState<FilterType>('all');
 
   // Load theme preference
   useEffect(() => {
@@ -118,6 +119,24 @@ export default function Dashboard() { // FIXED: Added space
     }
   };
 
+  // Filter functions
+  const getFilteredTasks = () => {
+    switch (activeFilter) {
+      case 'completed':
+        return tasks.filter(t => t.completed);
+      case 'inProgress':
+        return tasks.filter(t => !t.completed);
+      case 'highPriority':
+        return tasks.filter(t => t.priority === 'high' && !t.completed);
+      default:
+        return tasks;
+    }
+  };
+
+  const handleFilterClick = (filter: FilterType) => {
+    setActiveFilter(filter);
+  };
+
   // Loading state
   if (!user) {
     return (
@@ -132,9 +151,25 @@ export default function Dashboard() { // FIXED: Added space
     );
   }
 
+  // Calculate stats
   const completedTasks = tasks.filter(t => t.completed).length;
   const inProgressTasks = tasks.filter(t => !t.completed).length;
   const highPriorityTasks = tasks.filter(t => t.priority === 'high' && !t.completed).length;
+  const filteredTasks = getFilteredTasks();
+
+  // Get filter title for display
+  const getFilterTitle = () => {
+    switch (activeFilter) {
+      case 'completed':
+        return 'Completed Tasks';
+      case 'inProgress':
+        return 'In Progress Tasks';
+      case 'highPriority':
+        return 'High Priority Tasks';
+      default:
+        return 'All Tasks';
+    }
+  };
 
   return (
     <div className={combineClasses(
@@ -189,16 +224,28 @@ export default function Dashboard() { // FIXED: Added space
       <div className="relative z-10 max-w-7xl mx-auto px-6 pt-8 pb-12">
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            Your tasks
+            {getFilterTitle()}
           </h2>
           <p className="text-xl text-white/80 max-w-2xl mx-auto">
-            Beautiful glassmorphism task cards with priority indicators
+            {activeFilter === 'all' 
+              ? 'Beautiful glassmorphism task cards with priority indicators'
+              : `Showing ${filteredTasks.length} ${activeFilter === 'completed' ? 'completed' : activeFilter === 'inProgress' ? 'in progress' : 'high priority'} tasks`
+            }
           </p>
         </div>
 
-        {/* Stats Cards */}
+        {/* Interactive Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-          <div className="p-6 rounded-2xl backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
+          {/* Total Tasks */}
+          <button
+            onClick={() => handleFilterClick('all')}
+            className={`p-6 rounded-2xl backdrop-blur-md border transition-all duration-300 hover:scale-105 text-left w-full ${
+              activeFilter === 'all'
+                ? 'bg-white/20 border-white/40 shadow-lg shadow-blue-500/20'
+                : 'bg-white/10 border-white/20 hover:bg-white/15'
+            }`}
+            aria-label="Show all tasks"
+          >
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center">
                 <CheckCircle className="w-6 h-6 text-white" />
@@ -208,9 +255,18 @@ export default function Dashboard() { // FIXED: Added space
                 <p className="text-white/70 font-medium">Total Tasks</p>
               </div>
             </div>
-          </div>
+          </button>
 
-          <div className="p-6 rounded-2xl backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
+          {/* Completed Tasks */}
+          <button
+            onClick={() => handleFilterClick('completed')}
+            className={`p-6 rounded-2xl backdrop-blur-md border transition-all duration-300 hover:scale-105 text-left w-full ${
+              activeFilter === 'completed'
+                ? 'bg-white/20 border-white/40 shadow-lg shadow-green-500/20'
+                : 'bg-white/10 border-white/20 hover:bg-white/15'
+            }`}
+            aria-label="Show completed tasks"
+          >
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-full bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center">
                 <CheckCircle className="w-6 h-6 text-white" />
@@ -220,9 +276,18 @@ export default function Dashboard() { // FIXED: Added space
                 <p className="text-white/70 font-medium">Completed</p>
               </div>
             </div>
-          </div>
+          </button>
 
-          <div className="p-6 rounded-2xl backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
+          {/* In Progress Tasks */}
+          <button
+            onClick={() => handleFilterClick('inProgress')}
+            className={`p-6 rounded-2xl backdrop-blur-md border transition-all duration-300 hover:scale-105 text-left w-full ${
+              activeFilter === 'inProgress'
+                ? 'bg-white/20 border-white/40 shadow-lg shadow-yellow-500/20'
+                : 'bg-white/10 border-white/20 hover:bg-white/15'
+            }`}
+            aria-label="Show in progress tasks"
+          >
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-full bg-gradient-to-r from-yellow-500 to-yellow-600 flex items-center justify-center">
                 <Clock className="w-6 h-6 text-white" />
@@ -232,9 +297,18 @@ export default function Dashboard() { // FIXED: Added space
                 <p className="text-white/70 font-medium">In Progress</p>
               </div>
             </div>
-          </div>
+          </button>
 
-          <div className="p-6 rounded-2xl backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
+          {/* High Priority Tasks */}
+          <button
+            onClick={() => handleFilterClick('highPriority')}
+            className={`p-6 rounded-2xl backdrop-blur-md border transition-all duration-300 hover:scale-105 text-left w-full ${
+              activeFilter === 'highPriority'
+                ? 'bg-white/20 border-white/40 shadow-lg shadow-red-500/20'
+                : 'bg-white/10 border-white/20 hover:bg-white/15'
+            }`}
+            aria-label="Show high priority tasks"
+          >
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-full bg-gradient-to-r from-red-500 to-red-600 flex items-center justify-center">
                 <AlertTriangle className="w-6 h-6 text-white" />
@@ -244,23 +318,11 @@ export default function Dashboard() { // FIXED: Added space
                 <p className="text-white/70 font-medium">High Priority</p>
               </div>
             </div>
-          </div>
+          </button>
         </div>
 
-        {/* Action Buttons Row */}
-        <div className="flex items-center justify-center gap-6 mb-12">
-          <FiltersButton 
-            onClick={() => {
-              alert('Filters coming soon!');
-            }}
-          />
-          
-          <CollaborationButton 
-            onClick={() => {
-              alert('Collaboration coming soon!');
-            }}
-          />
-          
+        {/* Add Task Button */}
+        <div className="flex justify-center mb-12">
           <AddTaskButton 
             onClick={() => setIsCreateModalOpen(true)}
           />
@@ -268,11 +330,40 @@ export default function Dashboard() { // FIXED: Added space
 
         {/* Task Grid */}
         <TaskGrid
-          tasks={tasks}
+          tasks={filteredTasks}
           onToggleComplete={handleToggleTask}
           onDelete={handleDeleteTask}
           onEdit={handleEditTask}
         />
+
+        {/* Empty State */}
+        {filteredTasks.length === 0 && (
+          <div className="text-center py-12">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/10 flex items-center justify-center">
+              <CheckCircle className="w-8 h-8 text-white/50" />
+            </div>
+            <h3 className="text-xl font-semibold text-white mb-2">
+              {activeFilter === 'all' 
+                ? 'No tasks yet'
+                : `No ${activeFilter === 'completed' ? 'completed' : activeFilter === 'inProgress' ? 'in progress' : 'high priority'} tasks`
+              }
+            </h3>
+            <p className="text-white/70 mb-6">
+              {activeFilter === 'all' 
+                ? 'Create your first task to get started!'
+                : 'Try switching to a different filter or create a new task.'
+              }
+            </p>
+            {activeFilter !== 'all' && (
+              <button
+                onClick={() => handleFilterClick('all')}
+                className="px-6 py-2 rounded-full bg-white/10 text-white hover:bg-white/20 transition-all duration-300"
+              >
+                Show All Tasks
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Modals */}
         <TaskModal
