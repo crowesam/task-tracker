@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import Image from 'next/image';
 // import { useUser } from '@stackframe/stack';
 import { 
   CheckCircle, 
@@ -52,26 +53,21 @@ export default function LandingPage() {
         : 'bg-gradient-to-br from-teal-800 via-teal-700 to-teal-900'
     }`}>
       {/* Header */}
-     <nav className="relative z-10 p-6">
-            <div className="max-w-7xl mx-auto flex justify-between items-center">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center overflow-hidden">
-                  <Image
-                    src="/logo.png"
-                    alt="Medilios"
-                    width={60}
-                    height={60}
-                    className="w-8 h-8 object-contain"
-                    priority
-                  />
-                </div>
-                <div>
-                  <h1 className="text-2xl font-bold bg-gradient-to-r from-orange-400 to-orange-500 bg-clip-text text-transparent">
-                    Medilios
-                  </h1>
-                  <p className="text-white/70 text-sm">by Sam Crowe</p>
-                </div>
-              </div>
+      <nav className="relative z-10 p-6">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <Image
+              src="/logo.svg"
+              alt="Medilios"
+              width={40}
+              height={40}
+              className="h-10 w-auto"
+              priority
+            />
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-orange-400 to-orange-500 bg-clip-text text-transparent">
+              Medilios
+            </h1>
+          </div>
 
           <div className="flex items-center gap-4">
             {/* Theme Toggle */}
@@ -120,7 +116,7 @@ export default function LandingPage() {
         <div className="text-center">
           <h1 className="text-6xl md:text-7xl font-bold text-white mb-8 leading-tight">
             Beautiful Task
-            <span className="block bg-gradient-to-r from-orange-400 to-orange-500 bg-clip-text text-transparent">
+            <span className="block bg-gradient-to-r from-orange-400 to-orange-500 bg-clip-text text-transparent leading-tight">
               Management
             </span>
           </h1>
@@ -304,7 +300,7 @@ export default function LandingPage() {
             <p className="text-gray-500 text-xs mt-2">— Anonymous Beta Tester</p>
           </div>
           
-          <div className="text-xs text-gray-600 mt-6 max-w-lg mx-auto">
+          <div className="text-sm text-white/90 mt-6 max-w-lg mx-auto leading-relaxed">
             Side effects may include: increased productivity, sudden urge to organize everything, 
             the unsettling feeling that your tasks are watching you back, and an inexplicable 
             desire to complete that project from 2019.
@@ -317,8 +313,14 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-6 py-12">
           <div className="text-center">
             <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-white" />
+              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center overflow-hidden">
+                <Image
+                  src="/logo.png"
+                  alt="Medilios"
+                  width={24}
+                  height={24}
+                  className="w-6 h-6 object-contain"
+                />
               </div>
               <span className="text-xl font-bold bg-gradient-to-r from-orange-400 to-orange-500 bg-clip-text text-transparent">
                 Medilios
