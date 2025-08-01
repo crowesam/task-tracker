@@ -1,4 +1,4 @@
-// app/dashboard/page.tsx - Interactive Filter Cards
+// app/dashboard/page.tsx - Fixed Logo Implementation
 'use client'
 
 import { BackgroundEffects } from '@/src/components/layout/BackgroundEffects';
@@ -13,6 +13,7 @@ import TaskGrid from '@/src/components/ui/TaskGrid';
 import TaskForm from '@/src/components/ui/TaskForm';
 import AddTaskButton from '@/src/components/ui/AddTaskButton';
 import TaskModal from '@/src/components/ui/TaskModal';
+import Image from 'next/image'; // ✅ Add this import
 
 type FilterType = 'all' | 'completed' | 'inProgress' | 'highPriority';
 
@@ -185,8 +186,15 @@ export default function Dashboard() {
       <nav className="relative z-10 p-6">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center">
-              <Sparkles className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center overflow-hidden">
+              <Image
+                src="/logo.png"
+                alt="Medilios"
+                width={32}
+                height={32}
+                className="w-8 h-8 object-contain"
+                priority
+              />
             </div>
             <div>
               <h1 className="text-2xl font-bold bg-gradient-to-r from-orange-400 to-orange-500 bg-clip-text text-transparent">
