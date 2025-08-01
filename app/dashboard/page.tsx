@@ -1,4 +1,4 @@
-// app/dashboard/page.tsx - Fixed Logo Implementation
+// app/dashboard/page.tsx - Complete Dashboard with Full Gamification
 'use client'
 
 import { BackgroundEffects } from '@/src/components/layout/BackgroundEffects';
@@ -13,7 +13,12 @@ import TaskGrid from '@/src/components/ui/TaskGrid';
 import TaskForm from '@/src/components/ui/TaskForm';
 import AddTaskButton from '@/src/components/ui/AddTaskButton';
 import TaskModal from '@/src/components/ui/TaskModal';
-import Image from 'next/image'; // ✅ Add this import
+import TrophyCaseButton from '@/src/components/ui/TrophyCaseButton';
+import TrophyCase from '@/src/components/ui/TrophyCase';
+import BadgeAlert from '@/src/components/ui/BadgeAlert';
+import BadgeProgressWidget from '@/src/components/ui/BadgeProgressWidget';
+import { useGamification } from '@/src/hooks/useGamification';
+import Image from 'next/image';
 
 type FilterType = 'all' | 'completed' | 'inProgress' | 'highPriority';
 
@@ -28,6 +33,18 @@ export default function Dashboard() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<FrontendTask | null>(null);
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
+
+  // Gamification hook - THE MISSING PIECE!
+  const {
+    badges,
+    currentAchievement,
+    showTrophyCase,
+    unlockedBadgeCount,
+    setShowTrophyCase,
+    closeAchievementAlert,
+    getBadgeProgress,
+    checkAchievements
+  } = useGamification(tasks, user?.id || null);
 
   // Load theme preference
   useEffect(() => {
@@ -78,10 +95,15 @@ export default function Dashboard() {
     }
   }, [tasks, user]);
 
+  // Trigger achievement check when tasks change - CRITICAL FOR GAMIFICATION!
+  useEffect(() => {
+    checkAchievements();
+  }, [checkAchievements]);
+
   // Task operations
   const handleToggleTask = (id: string) => {
     setTasks(tasks.map(task => 
-      task.id === id ? { ...task, completed: !task.completed } : task
+      task.id === id ? { ...task, completed: !task.completed, updatedAt: new Date() } : task
     ));
   };
 
@@ -112,7 +134,7 @@ export default function Dashboard() {
     if (editingTask) {
       setTasks(tasks.map(task => 
         task.id === editingTask.id 
-          ? { ...taskData, id: editingTask.id, createdAt: editingTask.createdAt }
+          ? { ...taskData, id: editingTask.id, createdAt: editingTask.createdAt, updatedAt: new Date() }
           : task
       ));
       setIsEditModalOpen(false);
@@ -329,8 +351,22 @@ export default function Dashboard() {
           </button>
         </div>
 
-        {/* Add Task Button */}
-        <div className="flex justify-center mb-12">
+        {/* 🎮 GAMIFICATION: Badge Progress Widget */}
+        <div className="mb-12">
+          <BadgeProgressWidget
+            badges={badges}
+            getBadgeProgress={getBadgeProgress}
+            onOpenTrophyCase={() => setShowTrophyCase(true)}
+          />
+        </div>
+
+        {/* 🎮 GAMIFICATION: Action Buttons with Trophy Case */}
+        <div className="flex justify-center items-center gap-6 mb-12">
+          <TrophyCaseButton
+            onClick={() => setShowTrophyCase(true)}
+            badgeCount={unlockedBadgeCount}
+          />
+          
           <AddTaskButton 
             onClick={() => setIsCreateModalOpen(true)}
           />
@@ -373,7 +409,7 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Modals */}
+        {/* Task Creation and Edit Modals */}
         <TaskModal
           isOpen={isCreateModalOpen}
           onClose={() => setIsCreateModalOpen(false)}
@@ -402,6 +438,22 @@ export default function Dashboard() {
             }}
           />
         </TaskModal>
+
+        {/* 🎮 GAMIFICATION: Trophy Case Modal */}
+        <TrophyCase
+          badges={badges}
+          isOpen={showTrophyCase}
+          onClose={() => setShowTrophyCase(false)}
+        />
+
+        {/* 🎮 GAMIFICATION: Achievement Alert Notifications */}
+        {currentAchievement && (
+          <BadgeAlert
+            achievement={currentAchievement}
+            onClose={closeAchievementAlert}
+            isVisible={!!currentAchievement}
+          />
+        )}
       </div>
     </div>
   );
