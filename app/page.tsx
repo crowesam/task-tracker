@@ -53,19 +53,16 @@ export default function LandingPage() {
     }`}>
       {/* Header */}
       <nav className="relative z-10 p-6">
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center overflow-hidden">
-                <Image
-                  src="/logo.png"
-                  alt="Medilios"
-                  width={24}
-                  height={24}
-                  className="w-6 h-6 object-contain"
-                />
-              </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-orange-400 to-orange-500 bg-clip-text text-transparent">
-                Medilios
-              </span>
+           <header className="bg-teal-600 text-white p-4">
+  <div className="container mx-auto flex items-center">
+    <img 
+      src="/logo.png" 
+      alt="Medilios Logo" 
+      className="h-8 w-8 mr-3 rounded-full"
+    />
+    <h1 className="text-2xl font-bold text-orange-400">Medilios</h1>
+  </div>
+</header>
         
 
           <div className="flex items-center gap-4">
@@ -107,8 +104,7 @@ export default function LandingPage() {
               <ArrowRight size={16} />
             </Link>
           </div>
-        </div>
-      </nav>
+        </nav>
 
       {/* Hero Section */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 pt-20 pb-32">
