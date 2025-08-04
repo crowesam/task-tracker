@@ -335,7 +335,7 @@ export default function LandingPage() {
               © 2025 The Creative Crowe, LLC. All rights reserved.
             </p>
           </div>
-        </div>
+       
       </footer>
     </div>
   );
