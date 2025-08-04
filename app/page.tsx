@@ -310,21 +310,24 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="relative z-10 border-t border-white/10 mt-24">
         <div className="max-w-7xl mx-auto px-6 py-12">
-          <div className="text-center">
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center overflow-hidden">
-                <Image
-                  src="/logo.png"
-                  alt="Medilios"
-                  width={24}
-                  height={24}
-                  className="w-6 h-6 object-contain"
-                />
-              </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-orange-400 to-orange-500 bg-clip-text text-transparent">
-                Medilios
-              </span>
-            </div>
+                 <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center overflow-hidden">
+                        <Image
+                          src="/logo.png"
+                          alt="Medilios"
+                          width={32}
+                          height={32}
+                          className="w-8 h-8 object-contain"
+                          priority
+                        />
+                      </div>
+                      <div>
+                        <h1 className="text-2xl font-bold bg-gradient-to-r from-orange-400 to-orange-500 bg-clip-text text-transparent">
+                          Medilios
+                        </h1>
+                        <p className="text-white/70 text-sm">by Sam Crowe</p>
+                      </div>
+                    </div>
             <p className="text-white/60 mb-4">
               Beautiful task management that actually works
             </p>
