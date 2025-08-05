@@ -328,14 +328,16 @@ export default function LandingPage() {
                         <p className="text-white/70 text-sm">by Sam Crowe</p>
                       </div>
                     </div>
-            <p className="text-white/60 mb-4">
-              Beautiful task management that actually works
-            </p>
-            <p className="text-white/40 text-sm">
-              © 2025 The Creative Crowe, LLC. All rights reserved.
-            </p>
-          </div>
-         
+                    <div className="bg-teal-700 text-white py-8 mt-8 rounded-xl">
+                      <div className="container mx-auto px-4">
+                        <div className="text-center">
+                          <p className="text-white/70">
+                            © 2025 The Creative Crowe, LLC. All rights reserved.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+        </div>
       </footer>
     </div>
   );
