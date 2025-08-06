@@ -3,7 +3,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { StackProvider } from '@stackframe/stack';
 import { stackServerApp } from '@/lib/stack-auth';
-
+import { Analytics } from '@vercel/analytics/next';
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
 export const metadata: Metadata = {
@@ -21,7 +21,9 @@ export default function RootLayout({
       <body className={`${inter.className} antialiased`}>
         <StackProvider app={stackServerApp}>
           {children}
+        
         </StackProvider>
+          <Analytics/> 
       </body>
     </html>
   );
